@@ -1,9 +1,48 @@
-<h1>{{ question.question_text }}</h1>
+{% extends "base.html" %}
 
-<ul>
-{% for choice in question.choice_set.all %}
-    <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
-{% endfor %}
-</ul>
+{% block content %}
+	<h2 class="text-center">{{ poll.poll_name }}</h2>
 
-<a href="{% url 'polls:detail' question.id %}">Vote again?</a>
+  <div class="container-fluid">
+    <div class="row">
+      {% for question in poll.question_set.all %}
+        <div class="col-lg-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              {{ question.question_text }}
+              <canvas id="chart_{{ question.id }}" width="200" height="50"></canvas>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <a href="{% url 'polls:poll-detail' pk=poll.id %}">Vote again?</a>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    {% for question in poll.question_set.all %}
+      const ctx_{{ question.id }} = document.getElementById('chart_{{ question.id }}').getContext('2d');
+      let chart_{{ question.id }} = new Chart(ctx_{{ question.id }}, {
+          type: 'bar',
+          data: {
+              labels: [{% for choice in question.choice_set.all %}'{{ choice.choice_text }}',{% endfor %}],
+              datasets: [{
+                  label: 'Number of Answers',
+                  data: [{% for choice in question.choice_set.all %}{{ choice.answer_set.count }},{% endfor %}],
+                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+  {% endfor %}
+  </script>
+{% endblock %}
