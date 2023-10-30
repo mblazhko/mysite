@@ -3,5 +3,13 @@
 {% block content %}
 	<div>{{ object.poll_name }}</div>
   <div>{{ object.poll_description }}</div>
+  <ul>
+    {% for question in object.question_set.all %}
+    	<li>
+        {{ question.question_text }}
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="{% url "polls:poll-results" pk=object.id %}">I want to see result!</a>
   <a href="{% url "polls:vote" poll_id=object.id %}">I want to answer!</a>
 {% endblock %}
