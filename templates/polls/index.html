@@ -2,11 +2,24 @@
 
 {% block content %}
 {% if poll_list %}
-    <ul>
-    {% for poll in poll_list %}
-        <li><a href="{% url 'polls:poll-detail' poll.id %}">{{ poll.poll_name }}</a></li>
-    {% endfor %}
-    </ul>
+
+  <div class="container-fluid">
+    <div class="d-flex row">
+      <ul class="list-group">
+        {% for poll in poll_list %}
+          <li class="list-group-item">
+            <strong class="">{{ poll.poll_name }}</strong>
+            <span class="float-end">
+                <a href="{% url "polls:poll-detail" pk=poll.id %}"
+                   class="btn btn-info btn-xs">Vote</a>
+                <a href="{% url "polls:poll-results" pk=poll.id %}"
+                   class="btn btn-default btn-xs">View Results</a>
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 {% else %}
     <p>No polls are available.</p>
 {% endif %}
