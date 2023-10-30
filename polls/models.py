@@ -6,12 +6,16 @@ from django.utils import timezone
 
 class Poll(models.Model):
     poll_name = models.CharField(max_length=200)
+    poll_description = models.TextField(max_length=1000)
+    pub_date = models.DateTimeField("date published", default=timezone.now())
+
+    def __str__(self) -> str:
+        return self.poll_name
 
 
 class Question(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=255)
-    pub_date = models.DateTimeField("date published")
 
     def __str__(self) -> str:
         return self.question_text
@@ -25,7 +29,7 @@ class Choice(models.Model):
     choice_text = models.CharField(max_length=200)
 
     def __str__(self) -> str:
-        return self.choice_text
+        return f"{self.question.question_text} [{self.choice_text}]"
 
 
 class Answer(models.Model):

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div>{{ object.poll_name }}</div>
+  <div>{{ object.poll_description }}</div>
+  <a href="{% url "polls:vote" poll_id=object.id %}">I want to answer!</a>
+{% endblock %}
