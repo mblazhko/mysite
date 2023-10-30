@@ -14,14 +14,14 @@ class IndexView(generic.ListView):
     queryset = Poll.objects.all()
 
 
-class DetailView(generic.DetailView, FormMixin):
+class DetailView(generic.DetailView):
     model = Poll
     template_name = "polls/poll_detail.html"
     form_class = PollForm
 
 
 class ResultsView(generic.DetailView):
-    model = Question
+    model = Poll
     template_name = "polls/results.html"
 
 
