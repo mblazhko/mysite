@@ -10,7 +10,7 @@
   <div class="container-fluid m-0 p-0">
     <div class="row">
       {% for question in poll.question_set.all %}
-        <div class="col-lg-6 mb-2">
+        <div class="col-lg-6 my-1 px-1">
           <div class="card">
             <div class="card-body">
               {{ question.question_text }}
@@ -23,6 +23,8 @@
   </div>
 
   <a href="{% url 'polls:poll-detail' pk=poll.id %}">Vote again?</a>
+
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     {% for question in poll.question_set.all %}

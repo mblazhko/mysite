@@ -1,15 +1,56 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<div>{{ object.poll_name }}</div>
-  <div>{{ object.poll_description }}</div>
-  <ul>
-    {% for question in object.question_set.all %}
-    	<li>
-        {{ question.question_text }}
-      </li>
-    {% endfor %}
-  </ul>
-  <a href="{% url "polls:poll-results" pk=object.id %}">I want to see result!</a>
-  <a href="{% url "polls:vote" poll_id=object.id %}">I want to answer!</a>
+	<div>{{ poll.poll_name }}</div>
+  <div>{{ poll.poll_description }}</div>
+  <form method="post" id="pollForm">
+      {% csrf_token %}
+      {% for question in poll.question_set.all %}
+          <h4 id="question_{{ question.id }}">{{ question.question_text }}</h4>
+          {% for choice in question.choice_set.all %}
+              <input type="radio" name="choice_{{ question.id }}" value="{{ choice.id }}">
+              {{ choice.choice_text }}<br>
+          {% endfor %}
+      {% endfor %}
+      <button type="submit" class="btn btn-success">Голосувати</button>
+  </form>
+  <a href="{% url "polls:poll-results" pk=poll.id %}">I want to see result!</a>
+  <a href="{% url "polls:vote" poll_id=poll.id %}">I want to answer!</a>
+  <script>
+  document.getElementById('pollForm').addEventListener('submit', function(event) {
+    var questions = document.querySelectorAll('[name^="choice_"]');
+    var valid = true;
+
+    questions.forEach(function(question) {
+        const name = question.getAttribute('name');
+        const checked = document.querySelector('[name="' + name + '"]:checked');
+
+        const questionId = name.split('_')[1]; // Отримуємо id питання
+
+        const questionElement = document.getElementById('question_' + questionId);
+
+        if (!checked) {
+            valid = false;
+            if (!questionElement.querySelector('.error-message')) {
+                const errorMsg = document.createElement('h6');
+                errorMsg.className = 'error-message text-danger text-sm';
+                errorMsg.innerText = 'Please make your choice';
+                questionElement.appendChild(errorMsg);
+            }
+        } else {
+            if (questionElement.querySelector('.error-message')) {
+                questionElement.querySelector('.error-message').remove(); // Видаляємо попередню помилку
+            }
+        }
+    });
+
+    if (!valid) {
+        event.preventDefault();
+    }
+});
+
+
+
+
+  </script>
 {% endblock %}

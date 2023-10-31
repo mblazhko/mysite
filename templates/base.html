@@ -11,19 +11,17 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-<div class="container-fluid d-flex w-75 h-100 p-3 mx-auto flex-column">
-    <header class="mb-4">
-        <div>
-            <nav class="nav nav-masthead justify-content-center float-md-end">
-                <a class="nav-link fw-bold active" aria-current="page" href="{% url 'polls:index' %}">Home</a>
-            </nav>
-        </div>
-    </header>
+  <div class="container-fluid d-flex w-75 h-100 p-0 m-0 mx-auto flex-column">
 
-  <main class="container-fluid main-content position-relative max-height-vh-100 w-100 border-radius-lg">
-    {% block content %}{% endblock content %}
-  </main>
+    {% include "includes/header.html" %}
 
-</div>
+    <main class="container-fluid main-content position-relative max-height-vh-100 w-100 border-radius-lg">
+      {% block content %}{% endblock content %}
+    </main>
+
+  </div>
+
+  {% include "includes/footer.html" %}
+
 </body>
 </html>
