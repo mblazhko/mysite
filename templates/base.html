@@ -15,10 +15,13 @@
 
     {% include "includes/header.html" %}
 
-    <main class="container-fluid main-content position-relative max-height-vh-100 w-100 border-radius-lg m-0 p-0">
+    <main class="container-fluid main-content position-relative max-height-vh-100 w-100 border-radius-lg m-0 p-0 pb-4">
       {% block content %}{% endblock content %}
     </main>
 
+    <div class="d-flex justify-content-center">
+      {% include "includes/pagination.html" %}
+    </div>
   </div>
 
   {% include "includes/footer.html" %}
