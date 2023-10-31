@@ -1,17 +1,17 @@
 from django.db import models
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse, reverse_lazy
-from django.views import generic, View
-from django.views.generic.edit import FormMixin
+from django.urls import reverse
+from django.views import generic
+from django.views.decorators.cache import cache_page
 
-from polls.forms import AnswerForm
-from polls.models import Question, Choice, Poll, Answer
+from polls.models import Choice, Poll, Answer
 
 
 class IndexView(generic.ListView):
     model = Poll
     template_name = "polls/index.html"
+    paginate_by = 10
     queryset = Poll.objects.all()
 
     def get_context_data(self, *, object_list=None, **kwargs) -> dict:
@@ -22,6 +22,7 @@ class IndexView(generic.ListView):
         return context
 
 
+@cache_page(timeout=60 * 30)
 def poll_detail(request, pk):
     poll = get_object_or_404(Poll, pk=pk)
 

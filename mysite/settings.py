@@ -55,6 +55,17 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# Cache settings
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://localhost:6379/",
+        "KEY_PREFIX": "poll",
+        "TIMEOUT": 60 * 15,  # in seconds: 60 * 15 (15 minutes)
+    }
+}
+
+
 ROOT_URLCONF = "mysite.urls"
 
 TEMPLATES = [
