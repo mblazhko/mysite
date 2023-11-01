@@ -1,6 +1,7 @@
+from django.core.cache import cache
 from django.db import models
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
 from django.views.decorators.cache import cache_page
@@ -16,67 +17,68 @@ class IndexView(generic.ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        popular_polls = Poll.objects.annotate(num_answers=models.Count('question__choice__answer')).order_by('-num_answers')[:10]
+        popular_polls = Poll.objects.annotate(
+            num_answers=models.Count("question__choice__answer")
+        ).order_by("-num_answers")[:10]
         context["popular_polls"] = popular_polls
 
         return context
 
 
-@cache_page(timeout=60 * 30)
-def poll_detail(request, pk):
-    poll = get_object_or_404(Poll, pk=pk)
+@cache_page(timeout=60 * 10)
+def poll_detail(request, pk) -> HttpResponse:
+    poll = Poll.objects.prefetch_related(
+        "question_set__choice_set__answer_set"
+    ).get(pk=pk)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         for question in poll.question_set.all():
-            choice_id = request.POST.get(f'choice_{question.id}')
+            choice_id = request.POST.get(f"choice_{question.id}")
             if choice_id:
                 choice = Choice.objects.get(pk=choice_id)
                 Answer.objects.create(choice=choice)
 
         return HttpResponseRedirect(
-            reverse('polls:poll-results', args=(poll.id,)))
+            reverse("polls:poll-results", args=(poll.id,))
+        )
 
-    return render(request, 'polls/poll_detail.html', {'poll': poll})
+    return render(request, "polls/poll_detail.html", {"poll": poll})
 
 
 class ResultsView(generic.DetailView):
     template_name = "polls/results.html"
 
-    def get(self, request, *args, **kwargs):
-        poll = Poll.objects.prefetch_related('question_set__choice_set__answer_set').get(pk=kwargs['pk'])
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        poll = cache.get(f"poll_{kwargs['pk']}")
+        if not poll:
+            poll = Poll.objects.prefetch_related(
+                "question_set__choice_set__answer_set"
+            ).get(pk=kwargs["pk"])
+            cache.set(f"poll_{kwargs['pk']}", poll)
         questions = poll.question_set.all()
 
         charts_data = []
 
         for question in questions:
-            labels = [choice.choice_text for choice in
-                      question.choice_set.all()]
-            data = [choice.answer_set.count() for choice in
-                    question.choice_set.all()]
+            labels = [
+                choice.choice_text for choice in question.choice_set.all()
+            ]
+            data = [
+                choice.answer_set.count()
+                for choice in question.choice_set.all()
+            ]
 
             chart_data = {
-                'id': question.id,
-                'labels': labels,
-                'data': data,
+                "id": question.id,
+                "labels": labels,
+                "data": data,
             }
 
             charts_data.append(chart_data)
 
         context = {
-            'poll': poll,
-            'charts_data': charts_data,
+            "poll": poll,
+            "charts_data": charts_data,
         }
 
-        return render(request, self.template_name, context)
-
-# def vote(request, poll_id):
-#     poll = get_object_or_404(Poll, pk=poll_id)
-#     if request.method == 'POST':
-#         form = PollForm(request.POST)
-#         if form.is_valid():
-#             selected_choice = form.cleaned_data['choice']
-#             Answer.objects.create(choice=selected_choice, answer_text=selected_choice.choice_text)
-#             return HttpResponseRedirect(reverse('polls:results', args=(poll.id,)))
-#     else:
-#         form = PollForm(initial={'poll_name': poll.poll_name})
-#     return render(request, 'polls/vote.html', {'form': form, 'poll': poll})
+        return self.render_to_response(context)
