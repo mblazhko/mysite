@@ -40,18 +40,43 @@ def poll_detail(request, pk):
 
 
 class ResultsView(generic.DetailView):
-    model = Poll
     template_name = "polls/results.html"
 
+    def get(self, request, *args, **kwargs):
+        poll = Poll.objects.prefetch_related('question_set__choice_set__answer_set').get(pk=kwargs['pk'])
+        questions = poll.question_set.all()
 
-def vote(request, poll_id):
-    poll = get_object_or_404(Poll, pk=poll_id)
-    if request.method == 'POST':
-        form = PollForm(request.POST)
-        if form.is_valid():
-            selected_choice = form.cleaned_data['choice']
-            Answer.objects.create(choice=selected_choice, answer_text=selected_choice.choice_text)
-            return HttpResponseRedirect(reverse('polls:results', args=(poll.id,)))
-    else:
-        form = PollForm(initial={'poll_name': poll.poll_name})
-    return render(request, 'polls/vote.html', {'form': form, 'poll': poll})
+        charts_data = []
+
+        for question in questions:
+            labels = [choice.choice_text for choice in
+                      question.choice_set.all()]
+            data = [choice.answer_set.count() for choice in
+                    question.choice_set.all()]
+
+            chart_data = {
+                'id': question.id,
+                'labels': labels,
+                'data': data,
+            }
+
+            charts_data.append(chart_data)
+
+        context = {
+            'poll': poll,
+            'charts_data': charts_data,
+        }
+
+        return render(request, self.template_name, context)
+
+# def vote(request, poll_id):
+#     poll = get_object_or_404(Poll, pk=poll_id)
+#     if request.method == 'POST':
+#         form = PollForm(request.POST)
+#         if form.is_valid():
+#             selected_choice = form.cleaned_data['choice']
+#             Answer.objects.create(choice=selected_choice, answer_text=selected_choice.choice_text)
+#             return HttpResponseRedirect(reverse('polls:results', args=(poll.id,)))
+#     else:
+#         form = PollForm(initial={'poll_name': poll.poll_name})
+#     return render(request, 'polls/vote.html', {'form': form, 'poll': poll})
