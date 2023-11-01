@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<div class="card mb-3 border-0">
-      <div class="card-body p-0">
-        <h2 class="card-title">{{ poll.poll_name }}</h2>
-        <p class="card-text">{{ poll.poll_description }}</p>
-        <a href="{% url "polls:poll-results" pk=poll.id %}" class="btn btn-secondary">I want to see result!</a>
-      </div>
+	<div class="shadow card mb-3 border-0">
+    <div class="card-body d-flex flex-column align-items-start justify-content-between">
+      <h3 class="card-title">{{ poll.poll_name }}</h3>
+      <p class="card-text">{{ poll.poll_description }}</p>
+      <a href="{% url "polls:poll-results" pk=poll.id %}"
+         class="btn btn-sm btn-secondary">I want to see result!</a>
+    </div>
   </div>
   <form method="post" id="pollForm">
       {% csrf_token %}
@@ -33,7 +34,7 @@
         const name = question.getAttribute('name');
         const checked = document.querySelector('[name="' + name + '"]:checked');
 
-        const questionId = name.split('_')[1]; // Отримуємо id питання
+        const questionId = name.split('_')[1];
 
         const questionElement = document.getElementById('question_' + questionId);
 
@@ -47,7 +48,7 @@
             }
         } else {
             if (questionElement.querySelector('.error-message')) {
-                questionElement.querySelector('.error-message').remove(); // Видаляємо попередню помилку
+                questionElement.querySelector('.error-message').remove();
             }
         }
     });
