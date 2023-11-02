@@ -1,10 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import models
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
-from django.views.decorators.cache import cache_page
 
 from polls.models import Choice, Poll, Answer
 
@@ -25,7 +25,7 @@ class IndexView(generic.ListView):
         return context
 
 
-@cache_page(timeout=60 * 10)
+@login_required
 def poll_detail(request, pk) -> HttpResponse:
     poll = Poll.objects.prefetch_related(
         "question_set__choice_set__answer_set"
