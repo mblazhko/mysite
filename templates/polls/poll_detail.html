@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}
+	Poll: {{ poll.poll_name }}
+{% endblock %}
+
 {% block content %}
 	<div class="shadow card mb-3 border-0">
     <div class="card-body d-flex flex-column align-items-start justify-content-between">
