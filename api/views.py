@@ -29,6 +29,8 @@ class PollViewSet(
             return PollListSerializer
         if self.action == "retrieve":
             return PollDetailSerializer
+        if self.action == "create":
+            return PollDetailSerializer
         return PollSerializer
 
 
@@ -41,7 +43,7 @@ class QuestionViewSet(
     serializer_class = QuestionSerializer
 
     def get_serializer_class(self):
-        if self.action == "retrieve":
+        if self.action == "retrieve" or self.action == "create":
             return QuestionDetailSerializer
         return QuestionSerializer
 
@@ -57,8 +59,10 @@ class ChoiceViewSet(
 
 class AnswerViewSet(
     viewsets.GenericViewSet,
-    mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
 ):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
+
+    def perform_create(self, serializer) -> None:
+        serializer.save(user=self.request.user)

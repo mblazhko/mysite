@@ -3,6 +3,7 @@ from polls.models import Poll, Question, Choice, Answer
 
 
 class AnswerSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Answer
         fields = ("id", "choice", "owner")
@@ -21,7 +22,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class QuestionDetailSerializer(QuestionSerializer):
-    choices = ChoiceSerializer(many=True)
+    choices = ChoiceSerializer(many=True, source="choice_set")
 
     class Meta:
         model = Question
@@ -29,6 +30,8 @@ class QuestionDetailSerializer(QuestionSerializer):
 
 
 class PollSerializer(serializers.ModelSerializer):
+    slug = serializers.CharField(read_only=True)
+
     class Meta:
         model = Poll
         fields = (
@@ -41,7 +44,7 @@ class PollSerializer(serializers.ModelSerializer):
 
 
 class PollDetailSerializer(PollSerializer):
-    questions = QuestionDetailSerializer(many=True)
+    questions = QuestionDetailSerializer(many=True, source="question_set")
 
     class Meta:
         model = Poll
