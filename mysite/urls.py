@@ -23,7 +23,8 @@ from django.urls import path, include, reverse
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("polls/", include("polls.urls")),
-    path("accounts/", include("allauth.urls")), # new
+    path("accounts/", include("allauth.urls")),
+    path("api/", include("api.urls")),
     path("__debug__/", include("debug_toolbar.urls")),
     path("", lambda request: redirect(reverse("polls:index")), name='redirect'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
