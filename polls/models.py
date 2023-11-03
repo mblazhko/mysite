@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
@@ -29,6 +30,7 @@ class Choice(models.Model):
 
 class Answer(models.Model):
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return (

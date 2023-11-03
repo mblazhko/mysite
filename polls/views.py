@@ -30,19 +30,28 @@ def poll_detail(request, pk) -> HttpResponse:
     poll = Poll.objects.prefetch_related(
         "question_set__choice_set__answer_set"
     ).get(pk=pk)
+    user = request.user
+    has_voted = Answer.objects.filter(owner=user, choice__question__poll=poll).exists()
 
     if request.method == "POST":
         for question in poll.question_set.all():
             choice_id = request.POST.get(f"choice_{question.id}")
             if choice_id:
                 choice = Choice.objects.get(pk=choice_id)
-                Answer.objects.create(choice=choice)
+                answer = Answer.objects.filter(
+                    choice__question=question, owner=user).first()
+                if answer:
+                    answer.choice = choice
+                    answer.save()
+                else:
+                    Answer.objects.create(choice=choice,
+                                          owner=user)
 
         return HttpResponseRedirect(
             reverse("polls:poll-results", args=(poll.id,))
         )
 
-    return render(request, "polls/poll_detail.html", {"poll": poll})
+    return render(request, "polls/poll_detail.html", {"poll": poll, "has_voted": has_voted})
 
 
 class ResultsView(generic.DetailView):
