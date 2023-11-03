@@ -19,12 +19,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, include, reverse
+from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("polls/", include("polls.urls")),
     path("accounts/", include("allauth.urls")),
     path("api/", include("api.urls")),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/doc/', SpectacularSwaggerView.as_view(), name='doc'),
     path("__debug__/", include("debug_toolbar.urls")),
     path("", lambda request: redirect(reverse("polls:index")), name='redirect'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
