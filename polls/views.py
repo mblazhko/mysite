@@ -17,9 +17,11 @@ class IndexView(generic.ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        popular_polls = Poll.objects.annotate(
-            num_answers=models.Count("question__choice__answer")
-        ).order_by("-num_answers")[:10]
+        popular_polls = cache.get("popular_polls")
+        if not popular_polls:
+            popular_polls = Poll.objects.annotate(
+                num_answers=models.Count("question__choice__answer")
+            ).order_by("-num_answers")[:10]
         context["popular_polls"] = popular_polls
 
         return context
