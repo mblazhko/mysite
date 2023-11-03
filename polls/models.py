@@ -8,7 +8,7 @@ class Poll(models.Model):
     poll_name = models.CharField(max_length=200)
     poll_description = models.TextField(max_length=1000)
     pub_date = models.DateTimeField("date published", default=timezone.now())
-    slug = models.SlugField(max_length=255, blank=True)
+    slug = models.SlugField(unique=True, max_length=255, blank=True)
 
     def save(self, *args, **kwargs) -> None:
         if not self.slug:
