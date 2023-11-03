@@ -13,7 +13,7 @@ def invalidate_poll_cache(**kwargs) -> None:
     print("Invalidating poll cache")
     instance = kwargs['instance']
     if isinstance(instance, Answer):
-        cache_key = f"poll_{instance.choice.question.poll.pk}"
+        cache_key = f"poll_{instance.choice.question.poll.slug}"
     if isinstance(instance, Question):
-        cache_key = f"poll_{instance.poll.pk}"
+        cache_key = f"poll_{instance.poll.slug}"
     cache.delete(cache_key)

@@ -26,10 +26,10 @@ class IndexView(generic.ListView):
 
 
 @login_required
-def poll_detail(request, pk) -> HttpResponse:
+def poll_detail(request, slug) -> HttpResponse:
     poll = Poll.objects.prefetch_related(
         "question_set__choice_set__answer_set"
-    ).get(pk=pk)
+    ).get(slug=slug)
     user = request.user
     has_voted = Answer.objects.filter(owner=user, choice__question__poll=poll).exists()
 
@@ -48,7 +48,7 @@ def poll_detail(request, pk) -> HttpResponse:
                                           owner=user)
 
         return HttpResponseRedirect(
-            reverse("polls:poll-results", args=(poll.id,))
+            reverse("polls:poll-results", args=(poll.slug,))
         )
 
     return render(request, "polls/poll_detail.html", {"poll": poll, "has_voted": has_voted})
@@ -58,12 +58,12 @@ class ResultsView(generic.DetailView):
     template_name = "polls/results.html"
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
-        poll = cache.get(f"poll_{kwargs['pk']}")
+        poll = cache.get(f"poll_{kwargs['slug']}")
         if not poll:
             poll = Poll.objects.prefetch_related(
                 "question_set__choice_set__answer_set"
-            ).get(pk=kwargs["pk"])
-            cache.set(f"poll_{kwargs['pk']}", poll)
+            ).get(slug=kwargs["slug"])
+            cache.set(f"poll_{kwargs['slug']}", poll)
         questions = poll.question_set.all()
 
         charts_data = []

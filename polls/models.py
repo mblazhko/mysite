@@ -1,12 +1,19 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class Poll(models.Model):
     poll_name = models.CharField(max_length=200)
     poll_description = models.TextField(max_length=1000)
     pub_date = models.DateTimeField("date published", default=timezone.now())
+    slug = models.SlugField(max_length=255, blank=True)
+
+    def save(self, *args, **kwargs) -> None:
+        if not self.slug:
+            self.slug = slugify(self.poll_name)
+        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return self.poll_name

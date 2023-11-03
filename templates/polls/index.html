@@ -17,8 +17,8 @@
                   <p class="mb-0 text-muted">{{ poll.poll_description|truncatechars:60 }}</p>
                 </div>
                 <div class="btn-group">
-                  <a href="{% url "polls:poll-detail" pk=poll.id %}" class="btn btn-info btn-sm">Vote</a>
-                  <a href="{% url "polls:poll-results" pk=poll.id %}" class="btn btn-outline-secondary btn-sm">View Results</a>
+                  <a href="{% url "polls:poll-detail" slug=poll.slug %}" class="btn btn-info btn-sm">Vote</a>
+                  <a href="{% url "polls:poll-results" slug=poll.slug %}" class="btn btn-outline-secondary btn-sm">View Results</a>
                 </div>
               </li>
             {% endfor %}
@@ -29,7 +29,7 @@
           <ul class="shadow list-group">
             {% for poll in popular_polls %}
               <li class="list-group-item">
-                <a href="{% url "polls:poll-detail" pk=poll.id %}" class="text-dark text-decoration-none">{{ poll.poll_name }}</a>
+                <a href="{% url "polls:poll-detail" slug=poll.slug %}" class="text-dark text-decoration-none">{{ poll.poll_name }}</a>
               </li>
             {% endfor %}
           </ul>
