@@ -46,13 +46,14 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "crispy_forms",
     "crispy_bootstrap5",
+    "rest_framework",
     "polls",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     # social providers
     "allauth.socialaccount.providers.github",
-    'allauth.socialaccount.providers.google'
+    "allauth.socialaccount.providers.google",
 ]
 
 #allauth settings
