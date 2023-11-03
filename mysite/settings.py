@@ -44,16 +44,17 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "polls",
-    "allauth", # new
-    "allauth.account", # new
-    "allauth.socialaccount", # new
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
     # social providers
-    "allauth.socialaccount.providers.github", # new
-    "allauth.socialaccount.providers.twitter", # new
+    "allauth.socialaccount.providers.github",
+    'allauth.socialaccount.providers.google'
 ]
 
 #allauth settings
 AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
@@ -61,12 +62,12 @@ SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGOUT_ON_GET = True
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' #new
-EMAIL_HOST = 'smtp.gmail.com' #new
-EMAIL_PORT = 587 #new
-EMAIL_HOST_USER = 'makssimm1@gmail.com'  #new
-EMAIL_HOST_PASSWORD = "ycmx abhh vomc gcgw" #new
-EMAIL_USE_TLS = True #new
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'makssimm1@gmail.com'
+EMAIL_HOST_PASSWORD = "ycmx abhh vomc gcgw"
+EMAIL_USE_TLS = True
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
