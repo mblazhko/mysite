@@ -27,37 +27,6 @@ class IndexView(generic.ListView):
         return context
 
 
-@login_required
-def poll_detail(request, slug) -> HttpResponse:
-    poll = Poll.objects.prefetch_related(
-        "question_set__choice_set__answer_set"
-    ).get(slug=slug)
-    user = request.user
-    has_voted = Answer.objects.filter(owner=user,
-                                      choice__question__poll=poll).exists()
-
-    if request.method == "POST":
-        for question in poll.question_set.all():
-            choice_id = request.POST.get(f"choice_{question.id}")
-            if choice_id:
-                choice = Choice.objects.get(pk=choice_id)
-                answer = Answer.objects.filter(
-                    choice__question=question, owner=user).first()
-                if answer:
-                    answer.choice = choice
-                    answer.save()
-                else:
-                    Answer.objects.create(choice=choice,
-                                          owner=user)
-
-        return HttpResponseRedirect(
-            reverse("polls:poll-results", args=(poll.slug,))
-        )
-
-    return render(request, "polls/poll_detail.html",
-                  {"poll": poll, "has_voted": has_voted})
-
-
 class ResultsView(generic.DetailView):
     template_name = "polls/results.html"
 
@@ -98,6 +67,37 @@ class ResultsView(generic.DetailView):
 
 
 @login_required
+def poll_detail(request, slug) -> HttpResponse:
+    poll = Poll.objects.prefetch_related(
+        "question_set__choice_set__answer_set"
+    ).get(slug=slug)
+    user = request.user
+    has_voted = Answer.objects.filter(owner=user,
+                                      choice__question__poll=poll).exists()
+
+    if request.method == "POST":
+        for question in poll.question_set.all():
+            choice_id = request.POST.get(f"choice_{question.id}")
+            if choice_id:
+                choice = Choice.objects.get(pk=choice_id)
+                answer = Answer.objects.filter(
+                    choice__question=question, owner=user).first()
+                if answer:
+                    answer.choice = choice
+                    answer.save()
+                else:
+                    Answer.objects.create(choice=choice,
+                                          owner=user)
+
+        return HttpResponseRedirect(
+            reverse("polls:poll-results", args=(poll.slug,))
+        )
+
+    return render(request, "polls/poll_detail.html",
+                  {"poll": poll, "has_voted": has_voted})
+
+
+@login_required
 def poll_create(request) -> HttpResponse | HttpResponseRedirect:
     if request.method == "POST":
         name = request.POST.get("title")
@@ -122,3 +122,11 @@ def poll_create(request) -> HttpResponse | HttpResponseRedirect:
                 return HttpResponseRedirect(reverse("polls:poll-detail", args=(poll.slug)))
 
     return render(request, 'polls/poll_create.html')
+
+
+@login_required
+def poll_delete(request, slug) -> HttpResponse:
+    poll = Poll.objects.get(slug=slug)
+    poll.delete()
+
+    return HttpResponseRedirect(reverse("custom_user:user_profile"))

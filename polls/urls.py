@@ -9,6 +9,7 @@ urlpatterns = [
         "poll-<slug:slug>/results/", views.ResultsView.as_view(), name="poll-results"
     ),
     path('create-poll/', views.poll_create, name='poll-create'),
+    path('poll-<slug:slug>/delete-poll/', views.poll_delete, name='poll-delete'),
 ]
 
 app_name = "polls"

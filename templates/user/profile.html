@@ -65,7 +65,15 @@
                         </div>
                         <div id="polls-list" class="list-group list-group-flush mt-1" style="display: none;">
                           {% for poll in polls %}
-                            <a class="list-group-item list-group-item-action" href="{% url "polls:poll-detail" slug=poll.slug %}">{{ poll.poll_name }}</a>
+                            <div class="list-group-item list-group-item-action d-flex justify-content-between">
+                              <a class="text-dark text-decoration-none" href="{% url "polls:poll-detail" slug=poll.slug %}">{{ poll.poll_name }}</a>
+                              <form action="{% url 'polls:poll-delete' slug=poll.slug %}" method="POST" onsubmit="return confirm('Delete {{ poll.poll_name }}?');">
+                                {% csrf_token %}
+                                <button type="submit" class="my-auto btn btn-sm btn-light border text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Delete position">
+                                  Delete
+                                </button>
+                              </form>
+                            </div>
                           {% endfor %}
                         </div>
                       {% else %}
