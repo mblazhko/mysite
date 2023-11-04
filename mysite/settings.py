@@ -55,6 +55,10 @@ INSTALLED_APPS = [
     # social providers
     "allauth.socialaccount.providers.github",
     "allauth.socialaccount.providers.google",
+    'allauth.socialaccount.providers.facebook',
+    # custom user app
+    'django_use_email_as_username',
+    "custom_user",
 ]
 
 #allauth settings
@@ -172,6 +176,8 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+AUTH_USER_MODEL = "custom_user.User"
 
 LOGIN_REDIRECT_URL = "/polls/"
 LOGOUT_REDIRECT_URL = "/accounts/login/"
