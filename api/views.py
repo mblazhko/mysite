@@ -1,6 +1,9 @@
+from typing import Type
+
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.serializers import ModelSerializer
 
 from polls.models import Poll, Question, Choice, Answer
 from api.serializers import (
@@ -25,7 +28,7 @@ class PollViewSet(
     )
     serializer_class = PollSerializer
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> Type[ModelSerializer]:
         if self.action == "list":
             return PollListSerializer
         if self.action == "retrieve":
@@ -34,8 +37,11 @@ class PollViewSet(
             return QuestionSerializer
         return PollSerializer
 
+    def perform_create(self, serializer) -> None:
+        serializer.save(owner=self.request.user)
+
     @action(detail=True, methods=['post'])
-    def add_question(self, request, pk=None):
+    def add_question(self, request, pk=None) -> Response:
         poll = self.get_object()
         question_text = request.data.get('question_text')
         if question_text:
@@ -55,7 +61,7 @@ class QuestionViewSet(
     queryset = Question.objects.select_related("poll")
     serializer_class = QuestionSerializer
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> Type[ModelSerializer]:
         if self.action == "retrieve":
             return QuestionDetailSerializer
         if self.action == "add_choice":

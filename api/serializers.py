@@ -39,6 +39,7 @@ class QuestionDetailSerializer(QuestionSerializer):
 class PollSerializer(serializers.ModelSerializer):
     slug = serializers.CharField(read_only=True)
     pub_date = serializers.DateTimeField(default=timezone.now(), read_only=True)
+    owner = serializers.CharField(read_only=True)
 
     class Meta:
         model = Poll
@@ -47,7 +48,8 @@ class PollSerializer(serializers.ModelSerializer):
             "poll_name",
             "poll_description",
             "pub_date",
-            "slug"
+            "slug",
+            "owner",
         )
 
     def create(self, validated_data):

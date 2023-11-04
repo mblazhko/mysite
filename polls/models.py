@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
@@ -9,6 +10,7 @@ class Poll(models.Model):
     poll_description = models.TextField(max_length=1000)
     pub_date = models.DateTimeField("date published", default=timezone.now())
     slug = models.SlugField(unique=True, max_length=255, blank=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs) -> None:
         if not self.slug:
@@ -37,7 +39,7 @@ class Choice(models.Model):
 
 class Answer(models.Model):
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
-    owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return (
