@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_filters %}
 {% block title %}
     Signup
 {% endblock title %}
@@ -13,20 +14,7 @@
             {% csrf_token %}
             {{ form.non_field_errors }}
             <div class="mb-3">
-                {{ form.email.label_tag }} {{ form.email }}
-                {{ form.email.errors }}
-            </div>
-            <div class="mb-3">
-                {{ form.username.label_tag }} {{ form.username }}
-                {{ form.username.errors }}
-            </div>
-            <div class="mb-3">
-                {{ form.password1.label_tag }} {{ form.password1 }}
-                {{ form.password1.errors }}
-            </div>
-            <div class="mb-3">
-                {{ form.password2.label_tag }} {{ form.password2 }}
-                {{ form.password2.errors }}
+                {{ form|crispy }}
             </div>
             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
             <button type="submit" class="btn btn-primary">Sign Up</button>
