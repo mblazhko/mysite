@@ -64,7 +64,7 @@
                           <a class="btn btn-light border border-1" href="{% url 'polls:poll-create' %}">Create new poll</a>
                         </div>
                         <div id="polls-list" class="list-group list-group-flush mt-1" style="display: none;">
-                          {% for poll in user.poll_set.all %}
+                          {% for poll in polls %}
                             <a class="list-group-item list-group-item-action" href="{% url "polls:poll-detail" slug=poll.slug %}">{{ poll.poll_name }}</a>
                           {% endfor %}
                         </div>
