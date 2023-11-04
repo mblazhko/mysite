@@ -72,7 +72,7 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGOUT_ON_GET = True
 
 SOCIALACCOUNT_PROVIDERS = {}
@@ -96,7 +96,6 @@ if os.getenv("GITHUB_CLIENT") and os.getenv("GITHUB_SECRET"):
                 "key": ""
             }
         ],
-        'VERIFIED_EMAIL': False,
     }
 
 if os.getenv("GOOGLE_CLIENT") and os.getenv("GOOGLE_SECRET"):
@@ -108,7 +107,6 @@ if os.getenv("GOOGLE_CLIENT") and os.getenv("GOOGLE_SECRET"):
                 "key": ""
             },
         ],
-        'VERIFIED_EMAIL': False,
     }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

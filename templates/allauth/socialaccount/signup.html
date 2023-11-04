@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}
+    Signup
+{% endblock title %}
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Sign Up</h1>
+        <p>
+            You are about to use your {{ account.get_provider.name }} account to login to {{ site.name }}. As a final step, please complete the following form:
+        </p>
+        {% url 'socialaccount_signup' as action_url %}
+        <form method="post" action="{{ action_url }}" class="mt-4">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="mb-3">
+                {{ form.email.label_tag }} {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+            <div class="mb-3">
+                {{ form.username.label_tag }} {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+            <div class="mb-3">
+                {{ form.password1.label_tag }} {{ form.password1 }}
+                {{ form.password1.errors }}
+            </div>
+            <div class="mb-3">
+                {{ form.password2.label_tag }} {{ form.password2 }}
+                {{ form.password2.errors }}
+            </div>
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+    </div>
+{% endblock content %}

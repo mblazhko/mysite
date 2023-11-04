@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block head_title %}
+    Login Cancelled
+{% endblock head_title %}
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Login Cancelled</h1>
+        {% url 'account_login' as login_url %}
+        <p>
+            You decided to cancel logging in to our site using one of your existing accounts. If this was a mistake, please proceed to <a href="{{login_url}}" class="btn btn-primary">sign in</a>.
+        </p>
+    </div>
+{% endblock content %}
