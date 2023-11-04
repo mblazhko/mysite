@@ -61,15 +61,16 @@
                       {% if user.poll_set.all %}
                         <div>
                           <button id="show-polls-button" class="btn btn-light border border-1">Show all my polls</button>
-    {#                      <a class="btn btn-light border border-1" href="{% url 'polls:poll-create' %}"></a>#}
+                          <a class="btn btn-light border border-1" href="{% url 'polls:poll-create' %}">Create new poll</a>
                         </div>
                         <div id="polls-list" class="list-group list-group-flush mt-1" style="display: none;">
                           {% for poll in user.poll_set.all %}
                             <a class="list-group-item list-group-item-action" href="{% url "polls:poll-detail" slug=poll.slug %}">{{ poll.poll_name }}</a>
                           {% endfor %}
                         </div>
+                      {% else %}
+                        <p>You have no polls created. <a href="{% url 'polls:poll-create' %}">Click here</a> to create new one!</p>
                       {% endif %}
-    {#                  <p>You have no polls created. <a href="{% url 'polls:poll-create' %}">Click here</a> to create new one!</p>#}
                     </div>
                   </div>
               </div>

@@ -1,12 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from django.db import models
+from django.db import models, transaction
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import generic
 
-from polls.models import Choice, Poll, Answer
+from .models import Poll, Question, Choice, Answer
 
 
 class IndexView(generic.ListView):
@@ -33,7 +33,8 @@ def poll_detail(request, slug) -> HttpResponse:
         "question_set__choice_set__answer_set"
     ).get(slug=slug)
     user = request.user
-    has_voted = Answer.objects.filter(owner=user, choice__question__poll=poll).exists()
+    has_voted = Answer.objects.filter(owner=user,
+                                      choice__question__poll=poll).exists()
 
     if request.method == "POST":
         for question in poll.question_set.all():
@@ -53,7 +54,8 @@ def poll_detail(request, slug) -> HttpResponse:
             reverse("polls:poll-results", args=(poll.slug,))
         )
 
-    return render(request, "polls/poll_detail.html", {"poll": poll, "has_voted": has_voted})
+    return render(request, "polls/poll_detail.html",
+                  {"poll": poll, "has_voted": has_voted})
 
 
 class ResultsView(generic.DetailView):
@@ -93,3 +95,30 @@ class ResultsView(generic.DetailView):
         }
 
         return self.render_to_response(context)
+
+
+@login_required
+def poll_create(request) -> HttpResponse | HttpResponseRedirect:
+    if request.method == "POST":
+        name = request.POST.get("title")
+        description = request.POST.get("description")
+
+        print(name)
+        print(description)
+
+        if name and description:
+            with transaction.atomic():
+                poll = Poll.objects.create(poll_name=name, poll_description=description, owner=request.user, slug="")
+
+                questions = request.POST.getlist('questions')
+                for question_text in questions:
+                    question = Question.objects.create(poll=poll,
+                                                       question_text=question_text)
+
+                    choices = request.POST.getlist(f'options_{question_text}')
+                    for choice_text in choices:
+                        Choice.objects.create(question=question, choice_text=choice_text)
+
+                return HttpResponseRedirect(reverse("polls:poll-detail", args=(poll.slug)))
+
+    return render(request, 'polls/poll_create.html')
