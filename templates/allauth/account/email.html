@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% load allauth i18n %}
+{% block head_title %}
+    {% trans "Email Addresses" %}
+{% endblock head_title %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="shadow card">
+                    <div class="card-header">
+                        <h1>{% trans "Email Addresses" %}</h1>
+                    </div>
+                    <div class="card-body">
+                        {% if emailaddresses %}
+                            <p>{% trans 'The following email addresses are associated with your account:' %}</p>
+                            <form form=form action="{% url 'account_email' %}" method="post">
+                                {% csrf_token %}
+                                {% for radio in emailaddress_radios %}
+                                    {% with emailaddress=radio.emailaddress %}
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" checked=radio.checked name="email" value="{{ emailaddress.email }}" id="{{ radio.id }}">
+                                            <label class="form-check-label" for="{{ radio.id }}">
+                                                {{ emailaddress.email }}
+                                                {% if emailaddress.verified %}
+                                                    <span class="badge bg-success">{% translate "Verified" %}</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">{% translate "Unverified" %}</span>
+                                                {% endif %}
+                                                {% if emailaddress.primary %}
+                                                    <span class="badge bg-primary">{% translate "Primary" %}</span>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    {% endwith %}
+                                {% endfor %}
+                                <div class="mt-3">
+                                    <button type="submit" class="btn btn-primary" name="action_primary">{% trans 'Make Primary' %}</button>
+                                    <button type="submit" class="btn btn-secondary" name="action_send">{% trans 'Re-send Verification' %}</button>
+                                    <button type="submit" class="btn btn-danger delete" name="action_remove">{% trans 'Remove' %}</button>
+                                </div>
+                            </form>
+                        {% else %}
+                            {% include "account/snippets/warn_no_email.html" %}
+                        {% endif %}
+
+                        {% if can_add_email %}
+                            <h2>{% trans "Add Email Address" %}</h2>
+                            <form action="{% url 'account_email' %}" method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    {{ form|crispy }}
+                                </div>
+                                <button type="submit" class="btn btn-primary" name="action_add">{% trans "Add Email" %}</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            var actions = document.getElementsByName('action_remove');
+            if (actions.length) {
+                actions[0].addEventListener("click", function(e) {
+                    if (!confirm("{% trans 'Do you really want to remove the selected email address?' %}")) {
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock extra_body %}
