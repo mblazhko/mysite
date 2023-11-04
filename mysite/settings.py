@@ -75,6 +75,42 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_LOGOUT_ON_GET = True
 
+SOCIALACCOUNT_PROVIDERS = {}
+
+if os.getenv("FACEBOOK_CLIENT") and os.getenv("FACEBOOK_SECRET"):
+    SOCIALACCOUNT_PROVIDERS['facebook'] = {
+        'METHOD': 'oauth2',
+        'SCOPE': ['email', 'public_profile'],
+        'APP': {
+            'client_id': os.getenv("FACEBOOK_CLIENT"),
+            'secret': os.getenv("FACEBOOK_SECRET"),
+        }
+    }
+
+if os.getenv("GITHUB_CLIENT") and os.getenv("GITHUB_SECRET"):
+    SOCIALACCOUNT_PROVIDERS['github'] = {
+        "APPS": [
+            {
+                "client_id": os.getenv("GITHUB_CLIENT"),
+                "secret": os.getenv("GITHUB_SECRET"),
+                "key": ""
+            }
+        ],
+        'VERIFIED_EMAIL': False,
+    }
+
+if os.getenv("GOOGLE_CLIENT") and os.getenv("GOOGLE_SECRET"):
+    SOCIALACCOUNT_PROVIDERS['google'] = {
+        "APPS": [
+            {
+                "client_id": os.getenv("GOOGLE_CLIENT"),
+                "secret": os.getenv("GOOGLE_SECRET"),
+                "key": ""
+            },
+        ],
+        'VERIFIED_EMAIL': False,
+    }
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
