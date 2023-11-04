@@ -22,7 +22,7 @@
 
             <button class="btn btn-light border mt-2" type="button" onclick="addQuestion()">Add question</button>
             <div>
-              <button class="btn btn-success float-end" type="submit">Create poll</button>
+              <button class="btn btn-outline-success float-end" type="submit">Create poll</button>
             </div>
           </form>
         </div>
@@ -34,7 +34,7 @@
       const questionsDiv = document.getElementById("questions");
 
       const question = document.createElement("div");
-      question.className = "card-body"
+      question.classList.add("card-body", "border", "mb-2")
 
       const questionContainer = document.createElement("div");
       questionContainer.classList.add("d-flex", "align-items-center");
@@ -50,7 +50,7 @@
       const removeQuestionButton = document.createElement("button");
       removeQuestionButton.type = "button";
       removeQuestionButton.textContent = "-";
-      removeQuestionButton.classList.add("btn", "btn-danger", "ml-2");
+      removeQuestionButton.classList.add("btn", "btn-outline-danger", "ml-2");
       removeQuestionButton.addEventListener("click", function() {
           questionsDiv.removeChild(question);
       });
@@ -59,7 +59,7 @@
       const addOptionButton = document.createElement("button");
       addOptionButton.type = "button";
       addOptionButton.textContent = "Add an option";
-      addOptionButton.classList.add("btn", "btn-success", "ml-2", "mt-1");
+      addOptionButton.classList.add("btn", "btn-outline-dark", "ml-2", "my-1");
       addOptionButton.addEventListener("click", function() {
           const questionText = questionInput.value;
           addOption(question, questionText);
@@ -77,15 +77,15 @@
       optionInput.name = `options_${questionText}`;
       optionInput.required = true;
       optionInput.placeholder = "Option";
-      optionInput.classList.add("form-control", "form-control-sm")
+      optionInput.classList.add("form-control", "form-control-sm", "list-group-item",);
 
       const optionDiv = document.createElement("div");
-      optionDiv.classList.add("card-body", "d-flex", "align-items-center", "p-0", "mx-2", "mt-1")
+      optionDiv.classList.add("card-body", "d-flex", "align-items-center", "p-0", "mx-2")
 
       const removeOptionButton = document.createElement("button");
       removeOptionButton.type = "button";
       removeOptionButton.textContent = "-";
-      removeOptionButton.classList.add("btn", "btn-danger")
+      removeOptionButton.classList.add("btn", "btn-outline-danger",)
       removeOptionButton.addEventListener("click", function() {
         optionDiv.removeChild(optionInput);
         optionDiv.removeChild(removeOptionButton);
