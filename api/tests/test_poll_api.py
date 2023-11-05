@@ -1,8 +1,5 @@
-from unittest.mock import MagicMock
-
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
 from api.views import PollViewSet
@@ -71,7 +68,7 @@ class PollApiTest(TestCase):
 
         self.assertIn(question, poll_questions)
 
-    def test_add_question_withot_text(self) -> None:
+    def test_add_question_without_text(self) -> None:
         data = {"poll": self.poll.id, "question_text": ""}
         url = f"/api/polls/{self.poll.id}/add_question/"
         res = self.client.post(url, data)
