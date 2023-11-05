@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import models, transaction
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
 
@@ -108,7 +108,7 @@ def poll_create(request) -> HttpResponse | HttpResponseRedirect:
 
         if name and description:
             with transaction.atomic():
-                poll = Poll.objects.create(poll_name=name, poll_description=description, owner=request.user, slug="")
+                poll = Poll.objects.create(poll_name=name, poll_description=description, owner=request.user)
 
                 questions = request.POST.getlist('questions')
                 for question_text in questions:
@@ -119,7 +119,7 @@ def poll_create(request) -> HttpResponse | HttpResponseRedirect:
                     for choice_text in choices:
                         Choice.objects.create(question=question, choice_text=choice_text)
 
-                return HttpResponseRedirect(reverse("polls:poll-detail", args=(poll.slug)))
+                return HttpResponseRedirect(reverse("polls:poll-detail", kwargs={"slug": poll.slug}))
 
     return render(request, 'polls/poll_create.html')
 
