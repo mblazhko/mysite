@@ -50,6 +50,28 @@ class PrivatePollTest(BaseTest):
         self.assertEqual(response.context['poll'], self.poll)
         self.assertTemplateUsed(response, 'polls/poll_detail.html')
 
+    def test_submit_poll(self) -> None:
+        poll_detail_url = reverse(
+            "polls:poll-detail",
+            kwargs={"slug": self.poll.slug}
+        )
+        response = self.client.post(poll_detail_url, {
+            f"choice_{self.choice_1.id}": self.choice_1.id
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            reverse("polls:poll-results", args=(self.poll.slug,))
+        )
+
+        self.assertTrue(
+            Answer.objects.filter(
+                owner=self.user,
+                choice=self.choice_1
+            ).exists()
+        )
+
     def test_create_poll(self) -> None:
         poll_create_url = reverse("polls:poll-create")
         response = self.client.post(poll_create_url, {
