@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "rest_framework",
+    "rest_framework.authtoken",
     "drf_spectacular",
     "polls",
     "allauth",
@@ -151,7 +152,7 @@ REST_FRAMEWORK = {
             'rest_framework.permissions.IsAuthenticated',
         ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ]
 }
 

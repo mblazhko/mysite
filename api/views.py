@@ -1,10 +1,11 @@
 from typing import Type
 
+from django.contrib.auth import get_user_model
+from django.db.models.sql import Query
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
-
 from polls.models import Poll, Question, Choice, Answer
 from api.serializers import (
     AnswerSerializer,
@@ -22,6 +23,7 @@ class PollViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
 ):
     queryset = poll = Poll.objects.prefetch_related(
         "question_set__choice_set__answer_set"
@@ -36,6 +38,11 @@ class PollViewSet(
         if self.action == "add_question":
             return QuestionSerializer
         return PollSerializer
+
+    def get_queryset(self) -> Query:
+        queryset = self.queryset
+
+        return queryset.filter(owner=self.request.user)
 
     def perform_create(self, serializer) -> None:
         serializer.save(owner=self.request.user)
@@ -57,6 +64,7 @@ class QuestionViewSet(
     viewsets.GenericViewSet,
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
 ):
     queryset = Question.objects.select_related("poll")
     serializer_class = QuestionSerializer
@@ -67,6 +75,11 @@ class QuestionViewSet(
         if self.action == "add_choice":
             return ChoiceSerializer
         return QuestionSerializer
+
+    def get_queryset(self) -> Query:
+        queryset = self.queryset
+
+        return queryset.filter(poll__owner=self.request.user)
 
     @action(detail=True, methods=['post'])
     def add_choice(self, request, pk=None):
