@@ -21,6 +21,8 @@ services:
       - .env
     depends_on:
       - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=mysite.settings
 
   redis:
     image: "redis:alpine"
