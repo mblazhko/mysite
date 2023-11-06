@@ -27,8 +27,10 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("api/", include("api.urls")),
     path("user/", include("custom_user.urls")),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/schema/doc/', SpectacularSwaggerView.as_view(), name='doc'),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/schema/doc/", SpectacularSwaggerView.as_view(), name="doc"),
     path("__debug__/", include("debug_toolbar.urls")),
-    path("", lambda request: redirect(reverse("polls:index")), name='redirect'),
+    path(
+        "", lambda request: redirect(reverse("polls:index")), name="redirect"
+    ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

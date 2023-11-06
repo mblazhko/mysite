@@ -40,24 +40,29 @@ class PollViewSet(
         return PollSerializer
 
     def get_queryset(self) -> Query:
+        """Show only user's created poll"""
         queryset = self.queryset
 
         return queryset.filter(owner=self.request.user)
 
     def perform_create(self, serializer) -> None:
+        """Auto-assign user to the created poll"""
         serializer.save(owner=self.request.user)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def add_question(self, request, pk=None) -> Response:
+        """Action to add a question to the chosen poll"""
         poll = self.get_object()
-        question_text = request.data.get('question_text')
+        question_text = request.data.get("question_text")
         if question_text:
-            question = Question.objects.create(poll=poll,
-                                               question_text=question_text)
+            question = Question.objects.create(
+                poll=poll, question_text=question_text
+            )
             return Response(QuestionSerializer(question).data, status=201)
         else:
-            return Response({"error": "Question text is required."},
-                            status=400)
+            return Response(
+                {"error": "Question text is required."}, status=400
+            )
 
 
 class QuestionViewSet(
@@ -77,17 +82,20 @@ class QuestionViewSet(
         return QuestionSerializer
 
     def get_queryset(self) -> Query:
+        """Show questions created by this user"""
         queryset = self.queryset
 
         return queryset.filter(poll__owner=self.request.user)
 
-    @action(detail=True, methods=['post'])
-    def add_choice(self, request, pk=None):
+    @action(detail=True, methods=["post"])
+    def add_choice(self, request, pk=None) -> Response:
+        """Add a choice to the chosen question"""
         question = self.get_object()
-        choice_text = request.data.get('choice_text')
+        choice_text = request.data.get("choice_text")
         if choice_text:
-            choice = Choice.objects.create(question=question,
-                                           choice_text=choice_text)
+            choice = Choice.objects.create(
+                question=question, choice_text=choice_text
+            )
             return Response(ChoiceSerializer(choice).data, status=201)
         else:
             return Response({"error": "Choice text is required."}, status=400)
@@ -110,4 +118,5 @@ class AnswerViewSet(
     serializer_class = AnswerSerializer
 
     def perform_create(self, serializer) -> None:
+        """Auto-assign current user to answer"""
         serializer.save(owner=self.request.user)

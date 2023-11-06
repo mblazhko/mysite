@@ -1,11 +1,19 @@
+from typing import Callable
+
 from django.utils import timezone
 from rest_framework import serializers
 from polls.models import Poll, Question, Choice, Answer
 
 
 class AnswerSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Answer objects with auto-assigned current user
+    assigment
+    """
     owner = serializers.CharField(read_only=True)
-    choice = serializers.PrimaryKeyRelatedField(queryset=Choice.objects.select_related("question__poll"))
+    choice = serializers.PrimaryKeyRelatedField(
+        queryset=Choice.objects.select_related("question__poll")
+    )
 
     class Meta:
         model = Answer
@@ -13,7 +21,10 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class ChoiceSerializer(serializers.ModelSerializer):
-    question = serializers.CharField(read_only=True, source="question__question_text")
+    """Serializer for Choice objects with an auto-assigned question"""
+    question = serializers.CharField(
+        read_only=True, source="question__question_text"
+    )
 
     class Meta:
         model = Choice
@@ -21,6 +32,7 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
+    """Default serializer for Question objects with an auto-assigned poll"""
     poll = serializers.CharField(read_only=True, source="poll__poll_name")
 
     class Meta:
@@ -29,6 +41,10 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class QuestionDetailSerializer(QuestionSerializer):
+    """
+    Detail Question object serializer with displaying information about
+    assigned choices
+    """
     choices = ChoiceSerializer(many=True, source="choice_set")
 
     class Meta:
@@ -37,8 +53,14 @@ class QuestionDetailSerializer(QuestionSerializer):
 
 
 class PollSerializer(serializers.ModelSerializer):
+    """
+    Default Poll object serializer with auto-generated publication date,
+    slug and auto-assigned current user
+    """
     slug = serializers.CharField(read_only=True)
-    pub_date = serializers.DateTimeField(default=timezone.now(), read_only=True)
+    pub_date = serializers.DateTimeField(
+        default=timezone.now(), read_only=True
+    )
     owner = serializers.CharField(read_only=True)
 
     class Meta:
@@ -52,12 +74,14 @@ class PollSerializer(serializers.ModelSerializer):
             "owner",
         )
 
-    def create(self, validated_data):
-        validated_data['pub_date'] = timezone.now()
+    def create(self, validated_data) -> Callable:
+        """Auto generate a publication date"""
+        validated_data["pub_date"] = timezone.now()
         return super(PollSerializer, self).create(validated_data)
 
 
 class PollDetailSerializer(PollSerializer):
+    """Serializer for Poll detail view"""
     questions = QuestionDetailSerializer(many=True, source="question_set")
 
     class Meta:
@@ -68,11 +92,12 @@ class PollDetailSerializer(PollSerializer):
             "poll_description",
             "questions",
             "pub_date",
-            "slug"
+            "slug",
         )
 
 
 class PollListSerializer(serializers.ModelSerializer):
+    """Serializer for list view for Poll objects"""
     class Meta:
         model = Poll
         fields = ("id", "poll_name", "poll_description")

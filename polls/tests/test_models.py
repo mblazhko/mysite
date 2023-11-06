@@ -11,20 +11,19 @@ class ModelTest(TestCase):
             email="test@test.com",
             password="test_123",
             first_name="TestFirstName",
-            last_name="TestLastName"
+            last_name="TestLastName",
         )
         self.poll = Poll.objects.create(
             poll_name="Test poll",
             poll_description="Test poll description",
-            owner=user
+            owner=user,
         )
         self.question = Question.objects.create(
             poll=self.poll,
             question_text="Test Question",
         )
         self.choice = Choice.objects.create(
-            question=self.question,
-            choice_text="Test Choice 1"
+            question=self.question, choice_text="Test Choice 1"
         )
         self.answer = Answer.objects.create(
             choice=self.choice,
@@ -32,9 +31,7 @@ class ModelTest(TestCase):
         )
 
     def test_poll_save(self) -> None:
-        self.assertEqual(
-            self.poll.slug, slugify(self.poll.poll_name)
-        )
+        self.assertEqual(self.poll.slug, slugify(self.poll.poll_name))
 
     def test_poll_str(self) -> None:
         self.assertEqual(str(self.poll), self.poll.poll_name)
@@ -45,11 +42,11 @@ class ModelTest(TestCase):
     def test_choice_str(self) -> None:
         self.assertEqual(
             str(self.choice),
-            f"{self.question.question_text} [{self.choice.choice_text}]"
+            f"{self.question.question_text} [{self.choice.choice_text}]",
         )
 
     def test_answer_str(self) -> None:
         self.assertEqual(
             str(self.answer),
-            f"{self.choice.choice_text} [{self.choice.question.question_text}]"
+            f"{self.choice.choice_text} [{self.choice.question.question_text}]",
         )

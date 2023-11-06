@@ -13,8 +13,12 @@ from rest_framework.authtoken.models import Token
 @receiver(signal=post_save, sender=Question)
 @receiver(signal=post_save, sender=Answer)
 def invalidate_poll_cache(sender, **kwargs) -> None:
+    """
+    Delete the poll results cache before deleting or after creating a
+    Question or an Answer related with that poll
+    """
     print("Invalidating poll cache")
-    instance = kwargs['instance']
+    instance = kwargs["instance"]
     if isinstance(instance, Answer):
         cache_key = f"poll_{instance.choice.question.poll.slug}"
     if isinstance(instance, Question):
@@ -25,6 +29,10 @@ def invalidate_poll_cache(sender, **kwargs) -> None:
 @receiver(signal=post_delete, sender=Poll)
 @receiver(signal=post_save, sender=Answer)
 def invalidate_popular_poll_cache(sender, **kwargs) -> None:
+    """
+    Delete the popular poll cache after creating
+    or deleting an answer relating with the poll
+    """
     popular_polls_before = cache.get("popular_polls")
     popular_polls_after = Poll.objects.annotate(
         num_answers=models.Count("question__choice__answer")
@@ -36,6 +44,7 @@ def invalidate_popular_poll_cache(sender, **kwargs) -> None:
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
+def create_auth_token(sender, instance=None, created=False, **kwargs) -> None:
+    """Generate a new token after user creation"""
     if created:
         Token.objects.create(user=instance)

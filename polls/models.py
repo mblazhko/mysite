@@ -10,9 +10,12 @@ class Poll(models.Model):
     poll_description = models.TextField(max_length=1000)
     pub_date = models.DateTimeField("date published", default=timezone.now())
     slug = models.SlugField(unique=True, max_length=255, blank=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
 
     def save(self, *args, **kwargs) -> None:
+        """Generate slug during creation the poll"""
         if not self.slug:
             self.slug = slugify(self.poll_name)
         super().save(*args, **kwargs)
@@ -39,7 +42,9 @@ class Choice(models.Model):
 
 class Answer(models.Model):
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
 
     def __str__(self) -> str:
         return (

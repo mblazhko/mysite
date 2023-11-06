@@ -16,15 +16,16 @@ class QuestionApiTest(TestCase):
         )
         self.client.force_authenticate(self.user)
         self.question_viewset = QuestionViewSet()
-        self.poll = Poll.objects.create(
-            poll_name="poll_test",
-            poll_description="description_test",
-            owner=self.user,
-        ),
+        self.poll = (
+            Poll.objects.create(
+                poll_name="poll_test",
+                poll_description="description_test",
+                owner=self.user,
+            ),
+        )
         poll = Poll.objects.get(poll_name="poll_test")
         self.question = Question.objects.create(
-            poll=poll,
-            question_text="question"
+            poll=poll, question_text="question"
         )
 
     def test_get_serializer_class_retrieve(self) -> None:
@@ -38,10 +39,7 @@ class QuestionApiTest(TestCase):
         self.assertEqual(serializer_class, ChoiceSerializer)
 
     def test_add_choice_with_text(self) -> None:
-        data = {
-            "question": self.question.id,
-            "choice_text": "choice"
-        }
+        data = {"question": self.question.id, "choice_text": "choice"}
 
         url = f"/api/questions/{self.question.id}/add_choice/"
         res = self.client.post(url, data)
@@ -52,10 +50,7 @@ class QuestionApiTest(TestCase):
         self.assertIn(choice, self.question.choice_set.all())
 
     def test_add_choice_without_text(self) -> None:
-        data = {
-            "question": self.question.id,
-            "choice_text": ""
-        }
+        data = {"question": self.question.id, "choice_text": ""}
 
         url = f"/api/questions/{self.question.id}/add_choice/"
         res = self.client.post(url, data)

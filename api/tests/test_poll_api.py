@@ -4,8 +4,12 @@ from rest_framework.test import APIClient
 
 from api.views import PollViewSet
 from polls.models import Poll, Question
-from api.serializers import PollSerializer, PollListSerializer, \
-    PollDetailSerializer, QuestionSerializer
+from api.serializers import (
+    PollSerializer,
+    PollListSerializer,
+    PollDetailSerializer,
+    QuestionSerializer,
+)
 
 
 class PollApiTest(TestCase):
@@ -57,7 +61,7 @@ class PollApiTest(TestCase):
         self.assertEqual(poll.owner.id, self.user.id)
 
     def test_add_question_with_text(self) -> None:
-        data = {"poll": self.poll.id, 'question_text': "question"}
+        data = {"poll": self.poll.id, "question_text": "question"}
         url = f"/api/polls/{self.poll.id}/add_question/"
         res = self.client.post(url, data)
 

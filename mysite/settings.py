@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -56,15 +56,15 @@ INSTALLED_APPS = [
     # social providers
     "allauth.socialaccount.providers.github",
     "allauth.socialaccount.providers.google",
-    'allauth.socialaccount.providers.facebook',
+    "allauth.socialaccount.providers.facebook",
     # custom user app
-    'django_use_email_as_username',
+    "django_use_email_as_username",
     "custom_user",
 ]
 
-#allauth settings
+# allauth settings
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
+    "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
@@ -72,46 +72,46 @@ SITE_ID = 1
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGOUT_ON_GET = True
 
 SOCIALACCOUNT_PROVIDERS = {}
 
 if os.getenv("FACEBOOK_CLIENT") and os.getenv("FACEBOOK_SECRET"):
-    SOCIALACCOUNT_PROVIDERS['facebook'] = {
-        'METHOD': 'oauth2',
-        'SCOPE': ['email', 'public_profile'],
-        'APP': {
-            'client_id': os.getenv("FACEBOOK_CLIENT"),
-            'secret': os.getenv("FACEBOOK_SECRET"),
-        }
+    SOCIALACCOUNT_PROVIDERS["facebook"] = {
+        "METHOD": "oauth2",
+        "SCOPE": ["email", "public_profile"],
+        "APP": {
+            "client_id": os.getenv("FACEBOOK_CLIENT"),
+            "secret": os.getenv("FACEBOOK_SECRET"),
+        },
     }
 
 if os.getenv("GITHUB_CLIENT") and os.getenv("GITHUB_SECRET"):
-    SOCIALACCOUNT_PROVIDERS['github'] = {
+    SOCIALACCOUNT_PROVIDERS["github"] = {
         "APPS": [
             {
                 "client_id": os.getenv("GITHUB_CLIENT"),
                 "secret": os.getenv("GITHUB_SECRET"),
-                "key": ""
+                "key": "",
             }
         ],
     }
 
 if os.getenv("GOOGLE_CLIENT") and os.getenv("GOOGLE_SECRET"):
-    SOCIALACCOUNT_PROVIDERS['google'] = {
+    SOCIALACCOUNT_PROVIDERS["google"] = {
         "APPS": [
             {
                 "client_id": os.getenv("GOOGLE_CLIENT"),
                 "secret": os.getenv("GOOGLE_SECRET"),
-                "key": ""
+                "key": "",
             },
         ],
     }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
@@ -143,25 +143,25 @@ CACHES = {
     }
 }
 
-#api settings
+# api settings
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_PERMISSION_CLASSES': [
-            'rest_framework.permissions.IsAuthenticated',
-        ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ]
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
 }
 
-#swagger settings
+# swagger settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Poll API',
-    'DESCRIPTION': 'Vote all you want!',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
+    "TITLE": "Poll API",
+    "DESCRIPTION": "Vote all you want!",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
     # OTHER SETTINGS
 }
 
@@ -170,8 +170,10 @@ ROOT_URLCONF = "mysite.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [(os.path.join(BASE_DIR, 'templates')), (os.path.join(BASE_DIR, 'templates', 'allauth'))]
-        ,
+        "DIRS": [
+            (os.path.join(BASE_DIR, "templates")),
+            (os.path.join(BASE_DIR, "templates", "allauth")),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
