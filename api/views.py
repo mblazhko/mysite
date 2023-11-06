@@ -53,6 +53,16 @@ class PollViewSet(
     def add_question(self, request, pk=None) -> Response:
         """Action to add a question to the chosen poll"""
         poll = self.get_object()
+        if not self.request.user.is_staff:
+            if poll.owner != self.request.user:
+                return Response(
+                    {
+                        "error": "You do not have permission to add a question to "
+                        "this poll."
+                    },
+                    status=403,
+            )
+
         question_text = request.data.get("question_text")
         if question_text:
             question = Question.objects.create(
@@ -91,6 +101,15 @@ class QuestionViewSet(
     def add_choice(self, request, pk=None) -> Response:
         """Add a choice to the chosen question"""
         question = self.get_object()
+        if not self.request.user.is_staff:
+            if question.poll.owner != self.request.user:
+                return Response(
+                    {
+                        "error": "You do not have permission to add a choice to "
+                        "this question."
+                    },
+                    status=403,
+                )
         choice_text = request.data.get("choice_text")
         if choice_text:
             choice = Choice.objects.create(
