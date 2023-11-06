@@ -17,7 +17,6 @@ def invalidate_poll_cache(sender, **kwargs) -> None:
     Delete the poll results cache before deleting or after creating a
     Question or an Answer related with that poll
     """
-    print("Invalidating poll cache")
     instance = kwargs["instance"]
     if isinstance(instance, Answer):
         cache_key = f"poll_{instance.choice.question.poll.slug}"
