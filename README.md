@@ -56,7 +56,18 @@ If you want to use some third party providers provide variables below:
 
 ## Usage
 
-To start the project, make sure you have Docker installed, and then run the following command:
+- To start the project, make sure you have Docker installed, and then run the following command:
 
-```docker-compose up```
+   ```docker-compose up```
+
+- If you want to have a lot of default data, you have to:
+  1. Get container id: ```docker ps```
+  2. Go to the mysyte-web container:
+  ```docker exec -it <container_id> bash```
+
+  3. Run the following command:
+  ```python manage.py generate_data```
+
+  Note: that command creates huge quantity of data and take some time to create all in DB. Please be patient.
+
 
