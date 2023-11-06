@@ -67,7 +67,13 @@ If you want to use some third party providers provide variables below:
 
   3. Run the following command:
   ```python manage.py generate_data```
+  4. Then you can use that credential to log in:
+    - Email: `admin@admin.com`
+    - Password: `V!5WucFeReMQ7fg`
 
+- If you want to have only superuser run only command below in docker container:
+    ```python manage.py make```
+  
   Note: that command creates huge quantity of data and take some time to create all in DB. Please be patient.
-
+    
 
