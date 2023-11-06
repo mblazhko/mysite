@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+	Poll: {{ poll.poll_name }}
+{% endblock %}
+
+{% block content %}
+	<div class="shadow card mb-3 border-0">
+    <div class="card-body d-flex flex-column align-items-start justify-content-between">
+      <h3 class="card-title">{{ poll.poll_name }}</h3>
+      <p class="card-text">{{ poll.poll_description }}</p>
+      {% if has_voted %}
+      	<p class="text-warning">You have already voted. If you want to change the answers, select and click the "Vote" button</p>
+      {% endif %} 
+      <a href="{% url "polls:poll-results" slug=poll.slug %}"
+         class="btn btn-sm btn-secondary">I want to see result!</a>
+    </div>
+  </div>
+  <form method="post" id="pollForm">
+      {% csrf_token %}
+      {% for question in poll.question_set.all %}
+        <div class="shadow card mb-2">
+          <div class="card-body">
+            <h4
+              id="question_{{ question.id }}">{{ question.question_text }}</h4>
+            {% for choice in question.choice_set.all %}
+              <input type="radio" name="choice_{{ question.id }}"
+                     value="{{ choice.id }}">
+              {{ choice.choice_text }}<br>
+            {% endfor %}</div>
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-success">Vote!</button>
+  </form>
+  <script src="{% static "mysite/js/poll_detail.js" %}"></script>
+{% endblock %}

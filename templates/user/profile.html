@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+{% load account %}
+{% block head_title %}
+    User Profile
+{% endblock head_title %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="shadow card">
+                    <div class="card-header d-flex justify-content-between">
+                        Your Profile
+                      <div>
+                        <a href="{% url 'account_change_password' %}" class="btn btn-sm btn-primary">Change Password</a>
+                        <a href="{% url 'account_email' %}" class="btn btn-sm btn-primary">Change email</a>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                        {% if user.is_authenticated %}
+                          <div>
+                            <div class="d-flex justify-content-between">
+                              {% if user.first_name %}
+                              <p class="my-auto">{{ user.first_name }} {{ user.last_name }}</p>
+                              {% endif %}
+                              <button class="btn btn-sm btn-light border border-1" id="update-profile-button">
+                                {% if user.first_name %}
+                                  Change name
+                                {% else %}
+                                  Set first name and last name
+                                {% endif %}
+                              </button>
+                            </div>
+                            <div class="mb-2" id="update-profile-form" style="display: none;">
+                              <form id="profile-form" method="post" action="{% url 'custom_user:update_profile' %}">
+                                {% csrf_token %}
+                                <label for="first_name" class="form-label">First name:</label>
+                                <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" class="form-control"><br>
+                                <p id="first_name_error" class="error-message text-danger"></p>
+
+                                <label for="last_name" class="form-label">Last name:</label>
+                                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" class="form-control"><br>
+                                <p id="last_name_error" class="error-message text-danger"></p>
+
+                                <button type="submit" class="btn btn-sm btn-success">Save</button>
+                              </form>
+                            </div>
+                          </div>
+                            <p>Email: {{ user.email }}</p>
+                        {% else %}
+                            <p>You are not logged in.</p>
+                            <a href="{% url 'account_login' %}" class="btn btn-primary">Login</a>
+                            <a href="{% url 'account_signup' %}" class="btn btn-success">Sign Up</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="shadow card mt-1">
+                      <div class="card-header">
+                          Token for API
+                      </div>
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <p id="token-id">Your API Token: {{ user.auth_token.key }}</p>
+                        </div>
+                      </div>
+                    </div>
+                <div class="shadow card mt-1">
+                    <div class="card-header d-flex justify-content-between">
+                      Polls created by you
+                    </div>
+                    <div class="card-body">
+                      {% if user.poll_set.all %}
+                        <div>
+                          <button id="show-polls-button" class="btn btn-light border border-1">Show all my polls</button>
+                          <a class="btn btn-light border border-1" href="{% url 'polls:poll-create' %}">Create new poll</a>
+                        </div>
+                        <div id="polls-list" class="list-group list-group-flush mt-1" style="display: none;">
+                          {% for poll in polls %}
+                            <div class="list-group-item list-group-item-action d-flex justify-content-between">
+                              <a class="text-dark text-decoration-none" href="{% url "polls:poll-detail" slug=poll.slug %}">{{ poll.poll_name }}</a>
+                              <form action="{% url 'polls:poll-delete' slug=poll.slug %}" method="POST" onsubmit="return confirm('Delete {{ poll.poll_name }}?');">
+                                {% csrf_token %}
+                                <button type="submit" class="my-auto btn btn-sm btn-light border text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Delete position">
+                                  Delete
+                                </button>
+                              </form>
+                            </div>
+                          {% endfor %}
+                        </div>
+                      {% else %}
+                        <p>You have no polls created. <a href="{% url 'polls:poll-create' %}">Click here</a> to create new one!</p>
+                      {% endif %}
+                    </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+  <script src="{% static "user/js/profile.js" %}"></script>
+{% endblock content %}

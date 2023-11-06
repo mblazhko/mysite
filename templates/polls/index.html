@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Polls
+{% endblock %}
+
+{% block content %}
+  {% if poll_list %}
+    <div class="container-fluid mt-4">
+      <div class="row">
+        <div class="col-md-8">
+          <ul class="shadow list-group">
+            {% for poll in poll_list %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="mb-0">{{ poll.poll_name }}</h5>
+                  <p class="mb-0 text-muted">{{ poll.poll_description|truncatechars:60 }}</p>
+                </div>
+                <div class="btn-group">
+                  <a href="{% url "polls:poll-detail" slug=poll.slug %}" class="btn btn-info btn-sm">Vote</a>
+                  <a href="{% url "polls:poll-results" slug=poll.slug %}" class="btn btn-outline-secondary btn-sm">View Results</a>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h4>Top 10 Popular Polls</h4>
+          <ul class="shadow list-group">
+            {% for poll in popular_polls %}
+              <li class="list-group-item">
+                <a href="{% url "polls:poll-detail" slug=poll.slug %}" class="text-dark text-decoration-none">{{ poll.poll_name }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-center mt-4">No polls are available.</p>
+  {% endif %}
+{% endblock %}
