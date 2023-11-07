@@ -61,19 +61,19 @@ If you want to use some third party providers provide variables below:
    ```docker-compose up```
 
 - If you want to have a lot of default data, you have to:
-  1. Get container id: ```docker ps```
-  2. Go to the mysyte-web container:
-  ```docker exec -it <container_id> bash```
+  1. Get container id: `docker ps`
+  2. Go to the `mysite-web` container:
+     `docker exec -it <container_id> bash`
 
   3. Run the following command:
-  ```python manage.py generate_data```
-  4. Then you can use that credential to log in:
-    - Email: `admin@admin.com`
-    - Password: `V!5WucFeReMQ7fg`
+     `python manage.py generate_data`
+  4. Then you can use those credentials to log in:
+     - Email: `admin@admin.com`
+     - Password: `V!5WucFeReMQ7fg`
 
-- If you want to have only superuser run only command below in docker container:
-    ```python manage.py make```
-  
-  Note: that command creates huge quantity of data and take some time to create all in DB. Please be patient.
+- If you want to have a superuser only, run the command below inside the docker container:
+    `python manage.py make_superuser`
+
+  Note: This command creates a large amount of data and takes some time to populate the database. Please be patient.
     
 
