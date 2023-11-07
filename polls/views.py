@@ -27,7 +27,8 @@ class IndexView(generic.ListView):
             popular_polls = Poll.objects.annotate(
                 num_answers=models.Count("question__choice__answer")
             ).order_by("-num_answers")[:10]
-        context["popular_polls"] = popular_polls
+            cache.set("popular_polls", popular_polls)
+            context["popular_polls"] = popular_polls
 
         return context
 
