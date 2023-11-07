@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.db import models, transaction
 from django.http import HttpResponseRedirect, HttpResponse
@@ -73,43 +74,38 @@ class ResultsView(generic.DetailView):
         return self.render_to_response(context)
 
 
-@login_required
-def poll_detail(request, slug) -> HttpResponse:
-    """
-    Getting the poll data with all questions and choices.
-    Possibility to vote and re-vote if user already voted
-    """
-    poll = Poll.objects.prefetch_related(
-        "question_set__choice_set__answer_set"
-    ).get(slug=slug)
-    user = request.user
-    has_voted = Answer.objects.filter(
-        owner=user, choice__question__poll=poll
-    ).exists()
+class PollDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Poll
+    template_name = "polls/poll_detail.html"
+    context_object_name = "poll"
 
-    if request.method == "POST":
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        context["has_voted"] = (
+            Answer.objects.filter(
+                owner=self.request.user, choice__question__poll=self.object
+            ).exists()
+        )
+        return context
+
+    def post(self, request, *args, **kwargs) -> HttpResponse:
+        poll = self.get_object()
         for question in poll.question_set.all():
             choice_id = request.POST.get(f"choice_{question.id}")
             if choice_id:
                 choice = Choice.objects.get(pk=choice_id)
                 answer = Answer.objects.filter(
-                    choice__question=question, owner=user
+                    choice__question=question, owner=request.user
                 ).first()
                 if answer:
                     answer.choice = choice
                     answer.save()
                 else:
-                    Answer.objects.create(choice=choice, owner=user)
+                    Answer.objects.create(choice=choice, owner=request.user)
 
         return HttpResponseRedirect(
             reverse("polls:poll-results", args=(poll.slug,))
         )
-
-    return render(
-        request,
-        "polls/poll_detail.html",
-        {"poll": poll, "has_voted": has_voted},
-    )
 
 
 @login_required
