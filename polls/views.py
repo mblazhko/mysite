@@ -80,11 +80,13 @@ class PollDetailView(LoginRequiredMixin, generic.DetailView):
 
     model = Poll
     template_name = "polls/poll_detail.html"
-    context_object_name = "poll"
 
     def get_context_data(self, **kwargs) -> dict:
         """Get data if user already has voted"""
         context = super().get_context_data(**kwargs)
+        context["questions"] = Question.objects.prefetch_related(
+            "choice_set__answer_set"
+        ).filter(poll=self.object)
         context["has_voted"] = Answer.objects.filter(
             owner=self.request.user, choice__question__poll=self.object
         ).exists()

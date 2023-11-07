@@ -19,7 +19,7 @@
   </div>
   <form method="post" id="pollForm">
       {% csrf_token %}
-      {% for question in poll.question_set.all %}
+      {% for question in questions %}
         <div class="shadow card mb-2">
           <div class="card-body">
             <h4
