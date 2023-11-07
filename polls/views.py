@@ -86,7 +86,7 @@ class PollDetailView(LoginRequiredMixin, generic.DetailView):
         """Get data if user already has voted"""
         context = super().get_context_data(**kwargs)
         context["questions"] = Question.objects.prefetch_related(
-            "choice_set__answer_set"
+            "choice_set"
         ).filter(poll=self.object)
         context["has_voted"] = Answer.objects.filter(
             owner=self.request.user, choice__question__poll=self.object
