@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.db import models, transaction
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 from .models import Poll, Question, Choice, Answer
@@ -75,11 +75,13 @@ class ResultsView(generic.DetailView):
 
 
 class PollDetailView(LoginRequiredMixin, generic.DetailView):
+    """Detail view for Poll and possibility to vote"""
     model = Poll
     template_name = "polls/poll_detail.html"
     context_object_name = "poll"
 
     def get_context_data(self, **kwargs) -> dict:
+        """Get data if user already has voted"""
         context = super().get_context_data(**kwargs)
         context["has_voted"] = (
             Answer.objects.filter(
@@ -89,6 +91,10 @@ class PollDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
     def post(self, request, *args, **kwargs) -> HttpResponse:
+        """
+        Vote and assign answers to user.
+        Re-vote if user already has voted.
+        """
         poll = self.get_object()
         for question in poll.question_set.all():
             choice_id = request.POST.get(f"choice_{question.id}")
@@ -119,9 +125,6 @@ def poll_create(request) -> HttpResponse | HttpResponseRedirect:
         name = request.POST.get("title")
         description = request.POST.get("description")
 
-        print(name)
-        print(description)
-
         if name and description:
             with transaction.atomic():
                 poll = Poll.objects.create(
@@ -149,10 +152,7 @@ def poll_create(request) -> HttpResponse | HttpResponseRedirect:
     return render(request, "polls/poll_create.html")
 
 
-@login_required
-def poll_delete(request, slug) -> HttpResponse:
+class PollDeleteView(LoginRequiredMixin, generic.DeleteView):
     """View to delete a poll"""
-    poll = Poll.objects.get(slug=slug)
-    poll.delete()
-
-    return HttpResponseRedirect(reverse("custom_user:user_profile"))
+    model = Poll
+    success_url = reverse_lazy("custom_user:user_profile")

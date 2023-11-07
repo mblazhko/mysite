@@ -12,7 +12,7 @@ urlpatterns = [
     ),
     path("create-poll/", views.poll_create, name="poll-create"),
     path(
-        "poll-<slug:slug>/delete-poll/", views.poll_delete, name="poll-delete"
+        "poll-<slug:slug>/delete-poll/", views.PollDeleteView.as_view(), name="poll-delete"
     ),
 ]
 
