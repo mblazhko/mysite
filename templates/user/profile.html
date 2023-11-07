@@ -69,7 +69,7 @@
                       Polls created by you
                     </div>
                     <div class="card-body">
-                      {% if user.poll_set.all %}
+                      {% if polls %}
                         <div>
                           <button id="show-polls-button" class="btn btn-light border border-1">Show all my polls</button>
                           <a class="btn btn-light border border-1" href="{% url 'polls:poll-create' %}">Create new poll</a>
