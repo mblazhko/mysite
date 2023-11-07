@@ -25,7 +25,9 @@
             <h4
               id="question_{{ question.id }}">{{ question.question_text }}</h4>
             {% for choice in question.choice_set.all %}
-              <input type="radio" name="choice_{{ question.id }}"
+              <label for="choice_{{ question.id }}"></label>
+              <input type="radio" id="choice_{{ question.id }}"
+                     name="choice_{{ question.id }}"
                      value="{{ choice.id }}">
               {{ choice.choice_text }}<br>
             {% endfor %}</div>
