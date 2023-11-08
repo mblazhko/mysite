@@ -19,6 +19,8 @@ def invalidate_poll_cache(sender, **kwargs) -> None:
     Question or an Answer related with that poll
     """
     instance = kwargs["instance"]
+    if isinstance(instance, Poll):
+        cache_key = f"poll_{instance.slug}"
     if isinstance(instance, Answer):
         cache_key = f"poll_{instance.choice.question.poll.slug}"
     if isinstance(instance, Question):
