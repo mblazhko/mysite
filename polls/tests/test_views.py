@@ -140,4 +140,4 @@ class PublicPollTest(BaseTest):
 
         self.assertEqual(response.context["charts_data"], data)
         self.assertEqual(response.context["poll"], self.poll)
-        self.assertTemplateUsed(response, "polls/results.html")
+        self.assertTemplateUsed(response, "polls/poll_results.html")
