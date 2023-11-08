@@ -60,6 +60,8 @@ If you want to use some third party providers provide variables below:
 
    ```docker-compose up```
 
+- Go to `localhost:8000`
+
 - If you want to have a lot of default data, you have to:
   1. Get container id: `docker ps`
   2. Go to the `mysite-web` container:
