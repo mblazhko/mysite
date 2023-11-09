@@ -26,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", default=True)
+DEBUG = os.getenv("DEBUG", "") != "False"
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -134,6 +134,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 # Cache settings
 CACHES = {
     "default": {
@@ -146,9 +148,9 @@ CACHES = {
 
 # api settings
 REST_FRAMEWORK = {
-    # "DEFAULT_RENDERER_CLASSES": (
-    #         "rest_framework.renderers.JSONRenderer",
-    #     ),
+    "DEFAULT_RENDERER_CLASSES": (
+            "rest_framework.renderers.JSONRenderer",
+        ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -255,7 +257,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
