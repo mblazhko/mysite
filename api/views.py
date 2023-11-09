@@ -200,15 +200,3 @@ class ChoiceViewSet(
 ):
     queryset = Choice.objects.select_related("question__poll")
     serializer_class = ChoiceSerializer
-
-
-class AnswerViewSet(
-    viewsets.GenericViewSet,
-    mixins.CreateModelMixin,
-):
-    queryset = Answer.objects.none()
-    serializer_class = AnswerSerializer
-
-    def perform_create(self, serializer) -> None:
-        """Auto-assign current user to answer"""
-        serializer.save(owner=self.request.user)
