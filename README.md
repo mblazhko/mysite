@@ -13,11 +13,12 @@ This is a Django web app with an API implemented using Django Rest Framework(DRF
 
 ### Polls
 
-- **GET /polls/** - View a list of all polls.
-- **GET /polls/{slug}/** - View a specific poll by its unique slug.
-- **POST /polls/create-poll/** - Create a new poll.
-- **DELETE /polls/{slug}/delete-poll** - Delete an existing poll.
-- **GET /user/profile/** - View a user profile with settings and actions with user's polls
+- **/polls/** - View a list of all polls.
+- **/polls/poll-{slug}/** - View a specific poll by its unique slug.
+- **/polls/create-poll/** - Create a new poll.
+- **/polls/poll-{slug}/results** - Charts with specific poll results
+- **/polls/poll-{slug}/delete-poll** - Delete an existing poll.
+- **/user/profile/** - View a user profile with settings and actions with user's polls
 
 ## API Documentation
 
