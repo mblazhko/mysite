@@ -16,17 +16,19 @@ class QuestionApiTest(TestCase):
         )
         self.client.force_authenticate(self.user)
         self.question_viewset = QuestionViewSet()
-        self.poll = (
-            Poll.objects.create(
+        self.poll = Poll.objects.create(
                 poll_name="poll_test",
                 poll_description="description_test",
                 owner=self.user,
-            ),
-        )
-        poll = Poll.objects.get(poll_name="poll_test")
+            )
         self.question = Question.objects.create(
-            poll=poll, question_text="question"
+            poll=self.poll, question_text="question"
         )
+
+    def tearDown(self) -> None:
+        self.poll.delete()
+        self.question.delete()
+
 
     def test_get_serializer_class_retrieve(self) -> None:
         self.question_viewset.action = "retrieve"
