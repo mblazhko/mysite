@@ -1,4 +1,6 @@
-document.getElementById("show-polls-button").addEventListener("click", function() {
+const pollsButton = document.getElementById("show-polls-button")
+if (pollsButton) {
+    pollsButton.addEventListener("click", function() {
       const polls = document.getElementById("polls-list")
       if (polls.style.display === "none" || polls.style.display === "") {
           this.textContent = "Hide Polls"
@@ -8,15 +10,17 @@ document.getElementById("show-polls-button").addEventListener("click", function(
           polls.style.display = "none";
       }
   });
-  document.getElementById("update-profile-button").addEventListener("click", function() {
-      const form = document.getElementById("update-profile-form");
-      if (form.style.display === "none" || form.style.display === "") {
-          form.style.display = "block";
-      } else {
-          form.style.display = "none";
-      }
-  });
-  document.getElementById("profile-form").addEventListener("submit", function(event) {
+}
+
+document.getElementById("update-profile-button").addEventListener("click", function() {
+  const form = document.getElementById("update-profile-form");
+  if (form.style.display === "none" || form.style.display === "") {
+      form.style.display = "block";
+  } else {
+      form.style.display = "none";
+  }
+});
+document.getElementById("profile-form").addEventListener("submit", function(event) {
     const firstName = document.getElementById("first_name").value;
     const lastName = document.getElementById("last_name").value;
 
@@ -33,4 +37,4 @@ document.getElementById("show-polls-button").addEventListener("click", function(
     } else {
       document.getElementById("last_name_error").innerText = "";
     }
-  });
+});

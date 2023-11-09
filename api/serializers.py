@@ -2,26 +2,13 @@ from typing import Callable
 
 from django.utils import timezone
 from rest_framework import serializers
-from polls.models import Poll, Question, Choice, Answer
 
-
-class AnswerSerializer(serializers.ModelSerializer):
-    """
-    Serializer for Answer objects with auto-assigned current user
-    assigment
-    """
-    owner = serializers.CharField(read_only=True)
-    choice = serializers.PrimaryKeyRelatedField(
-        queryset=Choice.objects.select_related("question__poll")
-    )
-
-    class Meta:
-        model = Answer
-        fields = ("id", "choice", "owner")
+from polls.models import Poll, Question, Choice
 
 
 class ChoiceSerializer(serializers.ModelSerializer):
     """Serializer for Choice objects with an auto-assigned question"""
+
     question = serializers.CharField(
         read_only=True, source="question__question_text"
     )
@@ -33,6 +20,7 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     """Default serializer for Question objects with an auto-assigned poll"""
+
     poll = serializers.CharField(read_only=True, source="poll__poll_name")
 
     class Meta:
@@ -45,6 +33,7 @@ class QuestionDetailSerializer(QuestionSerializer):
     Detail Question object serializer with displaying information about
     assigned choices
     """
+
     choices = ChoiceSerializer(many=True, source="choice_set")
 
     class Meta:
@@ -57,6 +46,7 @@ class PollSerializer(serializers.ModelSerializer):
     Default Poll object serializer with auto-generated publication date,
     slug and auto-assigned current user
     """
+
     slug = serializers.CharField(read_only=True)
     pub_date = serializers.DateTimeField(
         default=timezone.now(), read_only=True
@@ -82,6 +72,7 @@ class PollSerializer(serializers.ModelSerializer):
 
 class PollDetailSerializer(PollSerializer):
     """Serializer for Poll detail view"""
+
     questions = QuestionDetailSerializer(many=True, source="question_set")
 
     class Meta:
@@ -98,6 +89,11 @@ class PollDetailSerializer(PollSerializer):
 
 class PollListSerializer(serializers.ModelSerializer):
     """Serializer for list view for Poll objects"""
+
     class Meta:
         model = Poll
         fields = ("id", "poll_name", "poll_description")
+
+
+class VoteSerializer(serializers.Serializer):
+    answers = serializers.ListField(child=serializers.IntegerField())

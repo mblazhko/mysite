@@ -25,6 +25,9 @@ class UserTest(TestCase):
             owner=self.user,
         )
 
+    def tearDown(self) -> None:
+        self.poll.delete()
+
     def test_user_profile(self) -> None:
         response = self.client.get(PROFILE_URL)
         polls = Poll.objects.filter(owner=self.user)

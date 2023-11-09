@@ -30,28 +30,31 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-  {% for chart_data in charts_data %}
-    const ctx_{{ chart_data.id }} = document.getElementById('chart_{{ chart_data.id }}').getContext('2d');
-    let chart_{{ chart_data.id }} = new Chart(ctx_{{ chart_data.id }}, {
-      type: 'bar',
-      data: {
-        labels: {{ chart_data.labels | safe }},
-        datasets: [{
-          label: 'Number of Answers',
-          data: {{ chart_data.data | safe }},
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+    {% for chart_data in charts_data %}
+      const ctx_{{ chart_data.id }} = document.getElementById('chart_{{ chart_data.id }}');
+      let chart_{{ chart_data.id }} = new Chart(ctx_{{ chart_data.id }}, {
+        type: 'bar',
+        data: {
+          labels: {{ chart_data.labels | safe }},
+          datasets: [{
+              label: 'Number of Answers',
+              data: {{ chart_data.data | safe }},
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              hoverBackgroundColor: 'rgba(75, 192, 192, 1)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+              borderRadius: 2,
+          }],
+        },
+        options: {
+            indexAxis: 'y',
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+          },
         }
-      }
-    });
-  {% endfor %}
+      });
+    {% endfor %}
 </script>
 {% endblock %}

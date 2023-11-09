@@ -35,6 +35,13 @@ class BaseTest(TestCase):
             owner=self.user,
         )
 
+    def tearDown(self) -> None:
+        self.poll.delete()
+        self.question.delete()
+        self.choice_1.delete()
+        self.choice_2.delete()
+        self.answer.delete()
+
 
 class PrivatePollTest(BaseTest):
     def test_retrieve_poll_detail(self) -> None:
@@ -140,4 +147,4 @@ class PublicPollTest(BaseTest):
 
         self.assertEqual(response.context["charts_data"], data)
         self.assertEqual(response.context["poll"], self.poll)
-        self.assertTemplateUsed(response, "polls/results.html")
+        self.assertTemplateUsed(response, "polls/poll_results.html")

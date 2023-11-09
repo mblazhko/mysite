@@ -30,6 +30,13 @@ class ModelTest(TestCase):
             owner=user,
         )
 
+    def tearDown(self) -> None:
+        self.poll.delete()
+        self.question.delete()
+        self.choice.delete()
+        self.answer.delete()
+
+
     def test_poll_save(self) -> None:
         self.assertEqual(self.poll.slug, slugify(self.poll.poll_name))
 

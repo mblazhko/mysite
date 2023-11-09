@@ -34,7 +34,7 @@ class IndexView(generic.ListView):
 
 
 class ResultsView(generic.DetailView):
-    template_name = "polls/results.html"
+    template_name = "polls/poll_results.html"
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """

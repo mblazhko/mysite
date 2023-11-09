@@ -11,10 +11,12 @@
                 <div class="shadow card">
                     <div class="card-header d-flex justify-content-between">
                         Your Profile
-                      <div>
+                      {% if not user.socialaccount_set.all %}
+                      	<div>
                         <a href="{% url 'account_change_password' %}" class="btn btn-sm btn-primary">Change Password</a>
                         <a href="{% url 'account_email' %}" class="btn btn-sm btn-primary">Change email</a>
-                      </div>
+                        </div>
+                      {% endif %}
                     </div>
                     <div class="card-body">
                         {% if user.is_authenticated %}
