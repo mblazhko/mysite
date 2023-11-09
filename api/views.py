@@ -144,7 +144,7 @@ class PollViewSet(
 
         return Response(
             {"message": "Votes submitted successfully."},
-            status=status.HTTP_200_OK,
+            status=status.HTTP_201_CREATED,
         )
 
 
