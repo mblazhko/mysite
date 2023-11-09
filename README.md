@@ -33,6 +33,7 @@ To customize the behavior of the project, you can set the following environment 
 
 - `DJANGO_DEBUG`: Set to `True` for development mode.
 - `DJANGO_SECRET_KEY`: Django secret key for cryptographic operations.
+- `ALLOWED_HOSTS`: Hosts, as default you can set "127.0.0.1 localhost"
 - `EMAIL_HOST_USER`: E-mail host for sending email, in the project we use Google
 - `EMAIL_HOST_PASSWORD`: App password from a Google account
 - `REDIS_CACHE_LOCATION`: Path to Redis cache location
