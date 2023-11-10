@@ -1,11 +1,11 @@
 from django.conf import settings
 from django.core.cache import cache
 from django.db import models
-from django.db.models.signals import post_save, pre_delete, post_delete
+from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import receiver
-
-from polls.models import Answer, Question, Poll
 from rest_framework.authtoken.models import Token
+
+from polls.models import Answer, Poll, Question
 
 
 @receiver(signal=post_delete, sender=Poll)

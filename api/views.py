@@ -1,20 +1,21 @@
 from typing import Type
 
 from django.db.models.sql import Query
-from rest_framework import viewsets, mixins, status
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer, Serializer
-from polls.models import Poll, Question, Choice, Answer
+
 from api.serializers import (
     ChoiceSerializer,
-    QuestionSerializer,
-    QuestionDetailSerializer,
-    PollSerializer,
     PollDetailSerializer,
     PollListSerializer,
-    VoteSerializer,
+    PollSerializer,
+    QuestionDetailSerializer,
+    QuestionSerializer,
+    VoteSerializer
 )
+from polls.models import Answer, Choice, Poll, Question
 
 
 class PollViewSet(

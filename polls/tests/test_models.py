@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils.text import slugify
 
-from polls.models import Poll, Question, Answer, Choice
+from polls.models import Answer, Choice, Poll, Question
 
 
 class ModelTest(TestCase):
