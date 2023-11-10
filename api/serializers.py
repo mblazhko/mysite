@@ -18,6 +18,10 @@ class ChoiceSerializer(serializers.ModelSerializer):
         fields = ("id", "question", "choice_text")
 
 
+class ChoiceDeleteSerializer(serializers.Serializer):
+    choice_id = serializers.IntegerField()
+
+
 class QuestionSerializer(serializers.ModelSerializer):
     """Default serializer for Question objects with an auto-assigned poll"""
 
