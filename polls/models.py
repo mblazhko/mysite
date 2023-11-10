@@ -21,6 +21,11 @@ class Poll(models.Model):
     def __str__(self) -> str:
         return self.poll_name
 
+    @property
+    def publication_date(self) -> str:
+        date = self.pub_date.strftime("%d-%m-%Y")
+        return f"Published at: {date}"
+
     def save(self, *args, **kwargs) -> None:
         """Generate slug during creation the poll"""
         if not self.slug:
