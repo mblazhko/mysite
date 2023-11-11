@@ -22,15 +22,19 @@ class IndexView(generic.ListView):
         Getting the data for 10 popular Polls based on quantity of answers.
         """
         context = super().get_context_data(**kwargs)
+        context["popular_polls"] = self.get_popular_polls_cache()
+
+        return context
+
+    def get_popular_polls_cache(self) -> QuerySet:
+        """Get the cache for popular polls and create if not cached."""
         popular_polls = cache.get("popular_polls")
         if not popular_polls:
             popular_polls = Poll.objects.annotate(
                 num_answers=models.Count("question__choice__answer")
             ).order_by("-num_answers")[:10]
             cache.set("popular_polls", popular_polls)
-        context["popular_polls"] = popular_polls
-
-        return context
+        return popular_polls
 
 
 class ResultsView(generic.DetailView):
