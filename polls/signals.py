@@ -82,3 +82,13 @@ def create_auth_token(sender, instance, created, **kwargs) -> None:
     """Generate a new token after user creation"""
     if created:
         Token.objects.create(user=instance)
+
+
+@receiver(signal=post_delete, sender=Poll)
+@receiver(signal=[post_delete, post_save], sender=Question)
+def invalidate_poll_questions_cache(sender, **kwargs) -> None:
+    instance = kwargs["instance"]
+    if isinstance(instance, Question):
+        cache.delete(f"{instance.poll.slug}_questions")
+    elif isinstance(instance, Poll):
+        cache.delete(f"{instance.slug}_questions")
