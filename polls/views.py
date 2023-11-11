@@ -1,13 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.cache import cache
-from django.db import models
-from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 from .models import Answer, Choice, Poll, Question
+from .utils.cache_utils import get_popular_polls_cache, get_cached_poll, \
+    get_cached_charts_data, get_has_voted_cache
 
 
 class IndexView(generic.ListView):
@@ -23,19 +22,9 @@ class IndexView(generic.ListView):
         Getting the data for 10 popular Polls based on quantity of answers.
         """
         context = super().get_context_data(**kwargs)
-        context["popular_polls"] = self.get_popular_polls_cache()
+        context["popular_polls"] = get_popular_polls_cache()
 
         return context
-
-    def get_popular_polls_cache(self) -> QuerySet:
-        """Get the cache for popular polls and create if not cached."""
-        popular_polls = cache.get("popular_polls")
-        if not popular_polls:
-            popular_polls = Poll.objects.annotate(
-                num_answers=models.Count("question__choice__answer")
-            ).order_by("-num_answers")[:10]
-            cache.set("popular_polls", popular_polls)
-        return popular_polls
 
 
 class ResultsView(generic.DetailView):
@@ -46,8 +35,8 @@ class ResultsView(generic.DetailView):
         Calculate the data for the charts in the result page.
         Check if cached data is available, if not get and cache
         """
-        poll = self.get_cached_poll(kwargs["slug"])
-        charts_data = self.get_cached_charts_data(poll)
+        poll = get_cached_poll(kwargs["slug"])
+        charts_data = get_cached_charts_data(poll=poll)
 
         context = {
             "poll": poll,
@@ -55,53 +44,6 @@ class ResultsView(generic.DetailView):
         }
 
         return self.render_to_response(context)
-
-    def get_cached_poll(self, slug) -> Poll:
-        """
-        Get the poll from cache or database and cache it
-        """
-        poll = cache.get(f"poll_{slug}")
-        if not poll:
-            poll = Poll.objects.prefetch_related(
-                "question_set__choice_set__answer_set"
-            ).get(slug=slug)
-            cache.set(f"poll_{slug}", poll)
-        return poll
-
-    def get_cached_charts_data(self, poll) -> list:
-        """
-        Get cached charts data or calculate and cache it
-        """
-        charts_data = cache.get(f"charts_data_{poll.slug}")
-        if not charts_data:
-            questions = poll.question_set.all()
-            charts_data = self.calculate_charts_data(questions)
-            cache.set(f"charts_data_{poll.slug}", charts_data)
-        return charts_data
-
-    def calculate_charts_data(self, questions) -> list:
-        """
-        Calculate charts data for the given questions
-        """
-        charts_data = []
-
-        for question in questions:
-            labels = [
-                choice.choice_text for choice in question.choice_set.all()
-            ]
-            data = [
-                choice.answer_set.count() for choice in question.choice_set.all()
-            ]
-
-            chart_data = {
-                "id": question.id,
-                "labels": labels,
-                "data": data,
-            }
-
-            charts_data.append(chart_data)
-
-        return charts_data
 
 
 class PollDetailView(LoginRequiredMixin, generic.DetailView):
@@ -116,7 +58,10 @@ class PollDetailView(LoginRequiredMixin, generic.DetailView):
         context["questions"] = Question.objects.prefetch_related(
             "choice_set"
         ).filter(poll=self.object)
-        context["has_voted"] = self.get_has_voted_cache()
+        context["has_voted"] = get_has_voted_cache(
+            user=self.request.user,
+            poll=self.get_object()
+        )
         return context
 
     def post(self, request, *args, **kwargs) -> HttpResponse:
@@ -142,21 +87,6 @@ class PollDetailView(LoginRequiredMixin, generic.DetailView):
             reverse("polls:poll-results", args=(poll.slug,))
         )
 
-    def get_has_voted_cache(self) -> bool:
-        """Get the value has voted or not and cache it if not cached"""
-        has_voted = cache.get(f"{self.request.user}_{self.object.slug}_voted")
-        if not has_voted:
-            has_voted = Answer.objects.filter(
-                owner=self.request.user,
-                choice__question__poll=self.object
-            ).exists()
-            cache.set(
-                f"{self.request.user}_{self.object.slug}_voted",
-                has_voted
-            )
-
-        return has_voted
-
 
 class PollCreateView(LoginRequiredMixin, generic.CreateView):
     """
@@ -169,6 +99,9 @@ class PollCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "polls/poll_create.html"
 
     def post(self, request, *args, **kwargs) -> HttpResponse:
+        """
+        Create a new poll using data from the post-request
+        """
         name = request.POST.get("title")
         description = request.POST.get("description")
 
@@ -199,7 +132,7 @@ class PollCreateView(LoginRequiredMixin, generic.CreateView):
 
 
 class PollDeleteView(LoginRequiredMixin, generic.DeleteView):
-    """View to delete a poll"""
+    """View to delete the poll"""
 
     model = Poll
     success_url = reverse_lazy("custom_user:user_profile")
