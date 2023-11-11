@@ -46,6 +46,14 @@ def invalidate_popular_poll_cache(sender, **kwargs) -> None:
         cache.set("popular_polls", popular_polls_after)
 
 
+@receiver(signal=post_delete, sender=settings.AUTH_USER_MODEL)
+def invalidate_has_voted_cache(sender, **kwargs) -> None:
+    instance = kwargs["instance"]
+    poll = kwargs["poll"]
+    key = cache.get(f"{instance}_{poll.slug}_voted")
+    cache.delete(key)
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance, created, **kwargs) -> None:
     """Generate a new token after user creation"""
