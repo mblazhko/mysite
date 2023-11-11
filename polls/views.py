@@ -116,14 +116,7 @@ class PollDetailView(LoginRequiredMixin, generic.DetailView):
         context["questions"] = Question.objects.prefetch_related(
             "choice_set"
         ).filter(poll=self.object)
-        has_voted = cache.get(f"{self.request.user}_{self.object.slug}_voted")
-        if not has_voted:
-            has_voted = Answer.objects.filter(
-                owner=self.request.user,
-                choice__question__poll=self.object
-        ).exists()
-            cache.set(f"{self.request.user}_{self.object.slug}_voted", has_voted)
-        context["has_voted"] = has_voted
+        context["has_voted"] = self.get_has_voted_cache()
         return context
 
     def post(self, request, *args, **kwargs) -> HttpResponse:
@@ -148,6 +141,21 @@ class PollDetailView(LoginRequiredMixin, generic.DetailView):
         return HttpResponseRedirect(
             reverse("polls:poll-results", args=(poll.slug,))
         )
+
+    def get_has_voted_cache(self) -> bool:
+        """Get the value has voted or not and cache it if not cached"""
+        has_voted = cache.get(f"{self.request.user}_{self.object.slug}_voted")
+        if not has_voted:
+            has_voted = Answer.objects.filter(
+                owner=self.request.user,
+                choice__question__poll=self.object
+            ).exists()
+            cache.set(
+                f"{self.request.user}_{self.object.slug}_voted",
+                has_voted
+            )
+
+        return has_voted
 
 
 class PollCreateView(LoginRequiredMixin, generic.CreateView):
@@ -185,8 +193,6 @@ class PollCreateView(LoginRequiredMixin, generic.CreateView):
             return HttpResponseRedirect(
                 reverse("polls:poll-detail", kwargs={"slug": poll.slug})
             )
-
-        return render(request, self.template_name)
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
         return render(request, self.template_name)
