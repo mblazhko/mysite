@@ -24,6 +24,8 @@ This is a Django web app with an API implemented using Django Rest Framework(DRF
 
 API documentation can be found in the **/api/schema/doc/**.
 
+You can find API key in the user's profile page
+
 ## Django Project
 
 This project is built using Django, a high-level web framework for Python. It follows the Model-View-Template (MVT) architectural pattern.
