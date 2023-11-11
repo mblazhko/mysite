@@ -9,10 +9,8 @@ from polls.models import Answer, Poll, Question, Choice
 
 
 @receiver(signal=post_delete, sender=Poll)
-@receiver(signal=pre_delete, sender=Question)
-@receiver(signal=pre_delete, sender=Answer)
-@receiver(signal=post_save, sender=Question)
-@receiver(signal=post_save, sender=Answer)
+@receiver(signal=[pre_delete, post_save], sender=Question)
+@receiver(signal=[pre_delete, post_save], sender=Answer)
 def invalidate_poll_cache(sender, **kwargs) -> None:
     """
     Delete the poll results cache before deleting or after creating a
@@ -47,12 +45,10 @@ def invalidate_popular_poll_cache(sender, **kwargs) -> None:
 
 
 @receiver(signal=post_delete, sender=Poll)
-@receiver(signal=post_delete, sender=Question)
-@receiver(signal=post_delete, sender=Choice)
+@receiver(signal=[post_delete, post_save], sender=Question)
+@receiver(signal=[post_delete, post_save], sender=Choice)
 @receiver(signal=post_delete, sender=settings.AUTH_USER_MODEL)
-@receiver(signal=post_save, sender=Question)
 @receiver(signal=post_save, sender=Answer)
-@receiver(signal=post_save, sender=Choice)
 def invalidate_has_voted_cache(sender, **kwargs) -> None:
     """
     Invalidate the has_voted_cache after made changes with instance
