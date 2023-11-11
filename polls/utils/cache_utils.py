@@ -2,7 +2,7 @@ from django.core.cache import cache
 from django.db import models
 from django.db.models import QuerySet
 
-from polls.models import Poll, Answer
+from polls.models import Poll, Answer, Question
 from polls.utils.calculate_utils import calculate_charts_data
 
 
@@ -57,3 +57,12 @@ def get_has_voted_cache(user, poll) -> bool:
 
     return has_voted
 
+
+def get_poll_questions_cache(poll) -> list:
+    questions = cache.get(f"{poll.slug}_questions")
+    if not questions:
+        questions = Question.objects.prefetch_related(
+            "choice_set"
+        ).filter(poll=poll)
+        cache.set(f"{poll.slug}_questions", questions)
+    return questions

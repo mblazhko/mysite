@@ -5,8 +5,13 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 from .models import Answer, Choice, Poll, Question
-from .utils.cache_utils import get_popular_polls_cache, get_cached_poll, \
-    get_cached_charts_data, get_has_voted_cache
+from .utils.cache_utils import (
+    get_popular_polls_cache,
+    get_cached_poll,
+    get_cached_charts_data,
+    get_has_voted_cache,
+    get_poll_questions_cache
+)
 
 
 class IndexView(generic.ListView):
@@ -54,13 +59,12 @@ class PollDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs) -> dict:
         """Get data if user already has voted"""
+
         context = super().get_context_data(**kwargs)
-        context["questions"] = Question.objects.prefetch_related(
-            "choice_set"
-        ).filter(poll=self.object)
+        context["questions"] = get_poll_questions_cache(poll=self.object)
         context["has_voted"] = get_has_voted_cache(
             user=self.request.user,
-            poll=self.get_object()
+            poll=self.object
         )
         return context
 
