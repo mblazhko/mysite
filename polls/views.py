@@ -88,9 +88,14 @@ class PollDetailView(LoginRequiredMixin, generic.DetailView):
         context["questions"] = Question.objects.prefetch_related(
             "choice_set"
         ).filter(poll=self.object)
-        context["has_voted"] = Answer.objects.filter(
-            owner=self.request.user, choice__question__poll=self.object
+        has_voted = cache.get(f"{self.request.user}_{self.object.slug}_voted")
+        if not has_voted:
+            has_voted = Answer.objects.filter(
+                owner=self.request.user,
+                choice__question__poll=self.object
         ).exists()
+            cache.set(f"{self.request.user}_{self.object.slug}_voted", has_voted)
+        context["has_voted"] = has_voted
         return context
 
     def post(self, request, *args, **kwargs) -> HttpResponse:
