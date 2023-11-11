@@ -2,14 +2,14 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from api.views import PollViewSet
-from polls.models import Poll, Question, Choice
 from api.serializers import (
-    PollSerializer,
-    PollListSerializer,
     PollDetailSerializer,
-    QuestionSerializer,
+    PollListSerializer,
+    PollSerializer,
+    QuestionSerializer
 )
+from api.views import PollViewSet
+from polls.models import Choice, Poll, Question
 
 
 class BasePollApiTest(TestCase):

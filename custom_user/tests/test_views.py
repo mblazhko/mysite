@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from polls.models import Poll
-
 
 PROFILE_URL = reverse("custom_user:user_profile")
 UPDATE_PROFILE_URL = reverse("custom_user:update_profile")

@@ -1,6 +1,6 @@
-from allauth.account.views import PasswordResetView
 from django.urls import path
-from custom_user.views import user_profile, update_profile
+
+from custom_user.views import update_profile, user_profile
 
 urlpatterns = [
     path("profile/", user_profile, name="user_profile"),

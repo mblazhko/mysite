@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
 
-from polls.models import Poll, Question, Answer, Choice
+from polls.models import Answer, Choice, Poll, Question
 
 
 class BaseTest(TestCase):

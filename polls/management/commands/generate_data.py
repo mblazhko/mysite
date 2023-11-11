@@ -1,7 +1,9 @@
+import random
+
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-import random
-from polls.models import Poll, Question, Choice, Answer
+
+from polls.models import Answer, Choice, Poll, Question
 
 
 class Command(BaseCommand):

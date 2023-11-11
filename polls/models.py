@@ -8,20 +8,29 @@ from django.utils.text import slugify
 class Poll(models.Model):
     poll_name = models.CharField(max_length=200)
     poll_description = models.TextField(max_length=1000)
-    pub_date = models.DateTimeField("date published", default=timezone.now())
+    pub_date = models.DateTimeField("date published", default=timezone.now)
     slug = models.SlugField(unique=True, max_length=255, blank=True)
     owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
     )
+
+    class Meta:
+        ordering = ["-pub_date"]
+
+    def __str__(self) -> str:
+        return self.poll_name
+
+    @property
+    def publication_date(self) -> str:
+        date = self.pub_date.strftime("%d-%m-%Y")
+        return f"Published at: {date}"
 
     def save(self, *args, **kwargs) -> None:
         """Generate slug during creation the poll"""
         if not self.slug:
             self.slug = slugify(self.poll_name)
         super().save(*args, **kwargs)
-
-    def __str__(self) -> str:
-        return self.poll_name
 
 
 class Question(models.Model):

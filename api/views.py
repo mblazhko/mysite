@@ -1,20 +1,23 @@
 from typing import Type
 
+from django.contrib.auth import get_user_model
 from django.db.models.sql import Query
-from rest_framework import viewsets, mixins, status
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer, Serializer
-from polls.models import Poll, Question, Choice, Answer
+
 from api.serializers import (
     ChoiceSerializer,
-    QuestionSerializer,
-    QuestionDetailSerializer,
-    PollSerializer,
     PollDetailSerializer,
     PollListSerializer,
+    PollSerializer,
+    QuestionDetailSerializer,
+    QuestionSerializer,
     VoteSerializer,
+    ChoiceDeleteSerializer
 )
+from polls.models import Answer, Choice, Poll, Question
 
 
 class PollViewSet(
@@ -157,11 +160,13 @@ class QuestionViewSet(
     queryset = Question.objects.select_related("poll")
     serializer_class = QuestionSerializer
 
-    def get_serializer_class(self) -> Type[ModelSerializer]:
+    def get_serializer_class(self) -> Type[Serializer]:
         if self.action == "retrieve":
             return QuestionDetailSerializer
         if self.action == "add_choice":
             return ChoiceSerializer
+        if self.action == "delete_choice":
+            return ChoiceDeleteSerializer
         return QuestionSerializer
 
     def get_queryset(self) -> Query:
@@ -192,11 +197,31 @@ class QuestionViewSet(
         else:
             return Response({"error": "Choice text is required."}, status=400)
 
+    @action(detail=True, methods=["post"])
+    def delete_choice(self, request, pk=None) -> Response:
+        user = self.request.user
 
-class ChoiceViewSet(
-    viewsets.GenericViewSet,
-    mixins.RetrieveModelMixin,
-    mixins.CreateModelMixin,
-):
-    queryset = Choice.objects.select_related("question__poll")
-    serializer_class = ChoiceSerializer
+        serializer = ChoiceDeleteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        choice_id = serializer.validated_data.get("choice_id")
+
+        existing_choice = Choice.objects.get(
+            id=choice_id,
+            question__poll__owner=user
+        )
+        if existing_choice:
+            existing_choice.delete()
+            return Response(
+                {"message": f"Choice with id {choice_id} was deleted"},
+                status=200
+            )
+
+        return Response(
+            {"error": f"You do not have permission to delete this choice"},
+            status=403
+        )
+
+
+
+
