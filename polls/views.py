@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.db import models
+from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -45,14 +46,43 @@ class ResultsView(generic.DetailView):
         Calculate the data for the charts in the result page.
         Check if cached data is available, if not get and cache
         """
-        poll = cache.get(f"poll_{kwargs['slug']}")
+        poll = self.get_cached_poll(kwargs["slug"])
+        charts_data = self.get_cached_charts_data(poll)
+
+        context = {
+            "poll": poll,
+            "charts_data": charts_data,
+        }
+
+        return self.render_to_response(context)
+
+    def get_cached_poll(self, slug) -> Poll:
+        """
+        Get the poll from cache or database and cache it
+        """
+        poll = cache.get(f"poll_{slug}")
         if not poll:
             poll = Poll.objects.prefetch_related(
                 "question_set__choice_set__answer_set"
-            ).get(slug=kwargs["slug"])
-            cache.set(f"poll_{kwargs['slug']}", poll)
-        questions = poll.question_set.all()
+            ).get(slug=slug)
+            cache.set(f"poll_{slug}", poll)
+        return poll
 
+    def get_cached_charts_data(self, poll) -> list:
+        """
+        Get cached charts data or calculate and cache it
+        """
+        charts_data = cache.get(f"charts_data_{poll.slug}")
+        if not charts_data:
+            questions = poll.question_set.all()
+            charts_data = self.calculate_charts_data(questions)
+            cache.set(f"charts_data_{poll.slug}", charts_data)
+        return charts_data
+
+    def calculate_charts_data(self, questions) -> list:
+        """
+        Calculate charts data for the given questions
+        """
         charts_data = []
 
         for question in questions:
@@ -60,8 +90,7 @@ class ResultsView(generic.DetailView):
                 choice.choice_text for choice in question.choice_set.all()
             ]
             data = [
-                choice.answer_set.count()
-                for choice in question.choice_set.all()
+                choice.answer_set.count() for choice in question.choice_set.all()
             ]
 
             chart_data = {
@@ -72,12 +101,7 @@ class ResultsView(generic.DetailView):
 
             charts_data.append(chart_data)
 
-        context = {
-            "poll": poll,
-            "charts_data": charts_data,
-        }
-
-        return self.render_to_response(context)
+        return charts_data
 
 
 class PollDetailView(LoginRequiredMixin, generic.DetailView):
