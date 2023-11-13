@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import QuerySet
 
 from polls.models import Poll, Answer, Question
-from polls.utils.calculate_utils import calculate_charts_data
+from .calculate_utils import calculate_charts_data
 
 
 def get_popular_polls_cache() -> QuerySet:

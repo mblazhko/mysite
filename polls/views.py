@@ -5,7 +5,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 from .models import Answer, Choice, Poll, Question
-from .utils.cache_utils import (
+from .utils import (
     get_popular_polls_cache,
     get_cached_poll,
     get_cached_charts_data,
