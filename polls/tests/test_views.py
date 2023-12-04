@@ -114,7 +114,7 @@ class PublicPollTest(BaseTest):
             reverse("polls:poll-detail", kwargs={"slug": self.poll.slug})
         )
 
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
 
     def test_retrieve_poll_list(self) -> None:
         index_url = reverse("polls:index")
@@ -144,6 +144,9 @@ class PublicPollTest(BaseTest):
                 ],
             }
         ]
+
+        print("Expected Data:", data)
+        print("Actual Data:", response.context["charts_data"])
 
         self.assertEqual(response.context["charts_data"], data)
         self.assertEqual(response.context["poll"], self.poll)
