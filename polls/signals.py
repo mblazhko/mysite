@@ -65,10 +65,10 @@ def invalidate_has_voted_cache(sender, **kwargs) -> None:
         slug = instance.poll.slug
     elif isinstance(instance, Choice):
         user = instance.question.poll.owner
-        slug = instance.question.poll
+        slug = instance.question.poll.slug
     elif isinstance(instance, Answer):
         user = instance.owner
-        slug = instance.choice.question.poll
+        slug = instance.choice.question.poll.slug
     elif isinstance(instance, settings.AUTH_USER_MODEL):
         for poll in instance.poll_set.all():
             cache.delete(f"{instance}_{poll.slug}_voted")
